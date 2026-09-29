@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { z } from "zod";
 import { AppConstants } from "./constants";
 import { Logger } from "./logger";
@@ -112,20 +113,54 @@ export class ConfigHandler {
 
 		API_DISABLE_DOCS: CS.boolean().default(false),
 
-		DB_PATH: CS.string().default("./data/db.sqlite"),
-		DB_AUTO_MIGRATE: CS.boolean().default(true),
+		// --- Zitadel -------------------------------------------------------------
+		// Base URL of the Zitadel API the login talks to (Zitadel login: ZITADEL_API_URL). With
+		// virtual instances the instance is picked per request via `x-zitadel-instance-host`.
+		ZITADEL_API_URL: CS.string(),
 
-		LOG_DIR: CS.string().default("./data/logs"),
-		CONFIG_BASE_DIR: CS.string().default("./config"),
+		// System API user (Zitadel login: AUDIENCE, SYSTEM_USER_ID, SYSTEM_USER_PRIVATE_KEY(_FILE)).
+		// The only supported authentication — see server/lib/zitadel/systemToken.ts.
+		AUDIENCE: CS.string(),
+		SYSTEM_USER_ID: CS.string(),
+		// PEM (PKCS#1 or PKCS#8), either base64-encoded (as the Zitadel login expects) or raw.
+		SYSTEM_USER_PRIVATE_KEY: CS.string().optional(),
+		SYSTEM_USER_PRIVATE_KEY_FILE: CS.string().optional(),
 
-		APP_URL: CS.string(),
+		// Secret(s) for signing the `sessions` cookie, comma-separated for rotation (first signs,
+		// all verify), each at least 32 characters (Zitadel login: ZITADEL_SESSION_COOKIE_SECRET).
+		SESSION_COOKIE_SECRET: CS.array().optional(),
 
-		SMTP_HOST: CS.string().optional(),
-		SMTP_PORT: CS.number().optional(),
-		SMTP_USERNAME: CS.string().optional(),
-		SMTP_PASSWORD: CS.string().optional(),
-		SMTP_FROM: CS.string().optional(),
-		SMTP_SECURE: CS.boolean().optional(),
+		// `key:value` pairs added to every Zitadel request, comma-separated; an empty value removes
+		// the header (Zitadel login: CUSTOM_REQUEST_HEADERS).
+		CUSTOM_REQUEST_HEADERS: CS.string().optional(),
+
+		// --- Login behaviour -----------------------------------------------------
+		// Overrides the redirect after a login without an OIDC/SAML request; a value starting with
+		// "/" is resolved against the public host (Zitadel login: DEFAULT_REDIRECT_URI).
+		DEFAULT_REDIRECT_URI: CS.string().optional(),
+		// Require a verified email before a session counts as valid (Zitadel login: EMAIL_VERIFICATION).
+		EMAIL_VERIFICATION: CS.boolean().default(false),
+		// Submit verification codes from email links automatically (NEXT_PUBLIC_AUTO_SUBMIT_CODE).
+		AUTO_SUBMIT_CODE: CS.boolean().default(false),
+		// Let `ui_locales` of an auth request override an existing language cookie
+		// (Zitadel login: ZITADEL_UI_LOCALES_OVERRIDE_COOKIE).
+		UI_LOCALES_OVERRIDE_COOKIE: CS.boolean().default(false),
+		// Application name shown in invite emails (NEXT_PUBLIC_APPLICATION_NAME).
+		APPLICATION_NAME: CS.string().default("LeiCraftMC Auth"),
+
+		// --- Caching & security --------------------------------------------------
+		// In-memory stale-while-revalidate cache for settings lookups (API_CACHE_ENABLED /
+		// API_CACHE_CONFIG, e.g. '{"defaultMinutes":15,"longMinutes":60,"maxSize":200}').
+		API_CACHE_ENABLED: CS.boolean().default(true),
+		API_CACHE_CONFIG: CS.string().optional(),
+		// Fetch the instance security settings to build frame-ancestors (CSP_FETCH_ENABLED).
+		CSP_FETCH_ENABLED: CS.boolean().default(true),
+		// Proxy /.well-known, /oauth, /oidc, /idps/callback, /saml and /assets to Zitadel so the
+		// login domain can act as the public Zitadel host.
+		PROXY_ZITADEL_PATHS: CS.boolean().default(true),
+		// Additional origins allowed to call the API with cookies (CORS + CSRF origin check)
+		// (Zitadel login: SERVER_ACTION_ALLOWED_ORIGINS).
+		ALLOWED_ORIGINS: CS.array().optional(),
 	});
 
 	private static config: ParsedConfig | null = null;
@@ -135,9 +170,60 @@ export class ConfigHandler {
 		return this.config;
 	}
 
+	/** Like {@link getConfig}, but throws when the config was not loaded yet. */
+	static get() {
+		if (!this.config) {
+			throw new Error("Config not loaded. Call ConfigHandler.loadConfig() first.");
+		}
+		return this.config;
+	}
+
 	static async loadConfig() {
 		if (this.config) return this.config;
 		this.config = this.schema.parse();
 		return this.config;
+	}
+
+	/** Test helper: drop the parsed config so the next `loadConfig()` re-reads the environment. */
+	static reset() {
+		this.config = null;
+	}
+
+	/**
+	 * The system user's private key as PEM. `SYSTEM_USER_PRIVATE_KEY` wins (base64-encoded like
+	 * the Zitadel login expects, or a raw PEM with literal `\n`), otherwise the file is read.
+	 */
+	static resolveSystemUserPrivateKey(): string {
+		const config = ConfigHandler.get();
+		const inline = config.SYSTEM_USER_PRIVATE_KEY;
+		if (inline) {
+			if (inline.includes("-----BEGIN")) {
+				return inline.replace(/\\n/g, "\n");
+			}
+			return Buffer.from(inline, "base64").toString("utf-8");
+		}
+		if (config.SYSTEM_USER_PRIVATE_KEY_FILE) {
+			return readFileSync(config.SYSTEM_USER_PRIVATE_KEY_FILE, "utf-8");
+		}
+		throw new Error(
+			`${AppConstants.APP_ENV_PREFIX}_SYSTEM_USER_PRIVATE_KEY or ${AppConstants.APP_ENV_PREFIX}_SYSTEM_USER_PRIVATE_KEY_FILE must be set.`,
+		);
+	}
+
+	/**
+	 * The configured credential as the Zitadel login uses it for the deprecated session-cookie
+	 * signing fallback: the raw env value, or the trimmed key file content.
+	 */
+	static resolveCredentialSecret(): string | undefined {
+		const config = ConfigHandler.get();
+		if (config.SYSTEM_USER_PRIVATE_KEY) return config.SYSTEM_USER_PRIVATE_KEY;
+		if (config.SYSTEM_USER_PRIVATE_KEY_FILE) {
+			try {
+				return readFileSync(config.SYSTEM_USER_PRIVATE_KEY_FILE, "utf-8").trim() || undefined;
+			} catch {
+				return undefined;
+			}
+		}
+		return undefined;
 	}
 }
