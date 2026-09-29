@@ -9,7 +9,6 @@ export default defineNuxtConfig({
 	app: {
 		baseURL: "/ui/v2/login/",
 		head: {
-			htmlAttrs: { class: "dark" },
 			meta: [{ name: "robots", content: "none" }],
 		},
 	},
@@ -23,6 +22,7 @@ export default defineNuxtConfig({
 		clientBundle: { scan: true },
 	},
 
+	// Dark (LeiCraft_MC) unless the branding forces / allows another theme (useBrandingTheme).
 	colorMode: {
 		preference: "dark",
 		fallback: "dark",

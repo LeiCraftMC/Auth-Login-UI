@@ -16,9 +16,29 @@ export const zGetSettingsBrandingResponse = z.object({
     message: z.literal('Branding loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }),
         defaultOrganization: z.string().optional()
@@ -76,9 +96,29 @@ export const zGetLoginnameResponse = z.object({
     message: z.literal('Page data loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }),
         loginSettings: z.object({
@@ -162,9 +202,29 @@ export const zGetAccountsResponse = z.object({
     message: z.literal('Page data loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }),
         sessions: z.array(z.object({
@@ -219,9 +279,29 @@ export const zGetPasswordResponse = z.object({
     message: z.literal('Page data loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }),
         loginSettings: z.object({
@@ -339,9 +419,29 @@ export const zGetPasswordSetResponse = z.object({
     message: z.literal('Page data loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }),
         error: z.enum(['couldNotGetLoginSettings']).optional(),
@@ -427,9 +527,29 @@ export const zGetPasswordChangeResponse = z.object({
     message: z.literal('Page data loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }),
         session: z.object({
@@ -508,9 +628,29 @@ export const zGetPasskeyResponse = z.object({
     message: z.literal('Page data loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }),
         session: z.object({
@@ -590,9 +730,29 @@ export const zGetPasskeySetResponse = z.object({
     message: z.literal('Page data loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }),
         session: z.object({
@@ -692,9 +852,29 @@ export const zGetU2fResponse = z.object({
     message: z.literal('Page data loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }),
         session: z.object({
@@ -749,9 +929,29 @@ export const zGetU2fSetResponse = z.object({
     message: z.literal('Page data loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }),
         session: z.object({
@@ -884,9 +1084,29 @@ export const zGetOtpByMethodResponse = z.object({
     message: z.literal('Page data loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }),
         session: z.object({
@@ -969,9 +1189,29 @@ export const zPostOtpByMethodSetResponse = z.object({
     message: z.literal('OTP setup started'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }),
         session: z.object({
@@ -1052,9 +1292,29 @@ export const zGetMfaResponse = z.object({
     message: z.literal('Page data loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }),
         session: z.object({
@@ -1121,9 +1381,29 @@ export const zGetMfaSetResponse = z.object({
     message: z.literal('Page data loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }),
         session: z.object({
@@ -1237,9 +1517,29 @@ export const zGetAuthenticatorSetResponse = z.object({
         error: z.enum(['sessionExpired', 'unknownContext']).optional(),
         redirect: z.string().optional(),
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }).nullable(),
         session: z.object({
@@ -1488,9 +1788,29 @@ export const zGetRegisterResponse = z.object({
     message: z.literal('Page data loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }),
         organization: z.string().optional(),
@@ -1584,9 +1904,29 @@ export const zGetRegisterPasswordResponse = z.object({
     message: z.literal('Page data loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }),
         organization: z.string().optional(),
@@ -1670,9 +2010,29 @@ export const zGetVerifyResponse = z.object({
     message: z.literal('Page data loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }),
         session: z.object({
@@ -1760,9 +2120,29 @@ export const zGetVerifySuccessResponse = z.object({
     message: z.literal('Page data loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }),
         session: z.object({
@@ -1840,9 +2220,29 @@ export const zGetSignedinResponse = z.object({
     message: z.literal('Page data loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }),
         session: z.object({
@@ -1897,9 +2297,29 @@ export const zGetLogoutResponse = z.object({
     message: z.literal('Page data loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }),
         sessions: z.array(z.object({
@@ -1955,9 +2375,29 @@ export const zGetDeviceResponse = z.object({
     message: z.literal('Page data loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         })
     })
@@ -1979,9 +2419,29 @@ export const zGetDeviceConsentResponse = z.object({
     data: z.object({
         error: z.enum(['noUserCode', 'noDeviceRequest']).optional(),
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }).nullable(),
         deviceAuthorizationRequest: z.object({
@@ -2054,9 +2514,29 @@ export const zGetIdpResponse = z.object({
     message: z.literal('Page data loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }),
         identityProviders: z.array(z.object({
@@ -2095,9 +2575,29 @@ export const zGetIdpLdapResponse = z.object({
     message: z.literal('Page data loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         })
     })
@@ -2145,9 +2645,29 @@ export const zGetIdpFailureResponse = z.object({
     message: z.literal('Page data loaded'),
     data: z.object({
         branding: z.object({
-            logoUrl: z.string().optional(),
-            iconUrl: z.string().optional(),
-            primaryColor: z.string().optional(),
+            light: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            dark: z.object({
+                primaryColor: z.string().optional(),
+                backgroundColor: z.string().optional(),
+                warnColor: z.string().optional(),
+                fontColor: z.string().optional(),
+                logoUrl: z.string().optional(),
+                iconUrl: z.string().optional()
+            }),
+            fontUrl: z.string().optional(),
+            themeMode: z.enum([
+                'unspecified',
+                'auto',
+                'light',
+                'dark'
+            ]),
             hideLoginNameSuffix: z.boolean()
         }),
         loginSettings: z.object({

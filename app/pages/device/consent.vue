@@ -56,14 +56,14 @@ async function deny() {
 			<ul class="w-full space-y-2">
 				<li
 					v-if="scopes.length === 0"
-					class="flex w-full flex-row items-center rounded-md border border-slate-800 bg-slate-900/60 px-4 py-2 text-sm"
+					class="flex w-full flex-row items-center rounded-md border border-default bg-elevated/50 px-4 py-2 text-sm"
 				>
 					{{ t("scope.openid") }}
 				</li>
 				<li
 					v-for="scope in scopes"
 					:key="scope"
-					class="flex w-full flex-row items-center rounded-md border border-slate-800 bg-slate-900/60 px-4 py-2 text-sm"
+					class="flex w-full flex-row items-center rounded-md border border-default bg-elevated/50 px-4 py-2 text-sm"
 				>
 					{{ scopeDescription(scope) }}
 				</li>

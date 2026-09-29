@@ -36,9 +36,10 @@ describe("GET /v1/loginname", () => {
 		expect(data.loginSettings.allowLocalAuthentication).toBe(true);
 		expect(data.loginSettings.allowRegister).toBe(true);
 		expect(data.defaultOrganization).toBe("default-org");
-		expect(data.branding.logoUrl).toBe("https://assets.test/logo.png");
+		expect(data.branding.dark.logoUrl).toBe("https://assets.test/logo.png");
 		// Zitadel's default primary color keeps the LeiCraft_MC color
-		expect(data.branding.primaryColor).toBeUndefined();
+		expect(data.branding.dark.primaryColor).toBeUndefined();
+		expect(data.branding.themeMode).toBe("unspecified");
 
 		// the virtual instance is selected by the request host
 		expect(calls.length).toBeGreaterThan(0);

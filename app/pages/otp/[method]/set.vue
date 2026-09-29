@@ -128,7 +128,7 @@ watch(
 			/>
 			<!-- eslint-disable-next-line vue/no-v-html -- generated SVG of the TOTP URI -->
 			<div class="my-4 h-40 w-40 rounded-md bg-white p-2" data-testid="totp-qr-code" v-html="qrCode" />
-			<div class="my-2 mb-4 flex w-full items-center rounded-lg border border-slate-800 px-4 py-2 pr-2 text-sm">
+			<div class="my-2 mb-4 flex w-full items-center rounded-lg border border-default px-4 py-2 pr-2 text-sm">
 				<ULink :to="page.totp.uri" target="_blank" class="flex-1 overflow-x-auto whitespace-nowrap">
 					{{ page.totp.uri }}
 				</ULink>

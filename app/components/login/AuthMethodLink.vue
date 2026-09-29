@@ -19,8 +19,8 @@ const ICONS: Record<AuthMethodKind, string> = {
 };
 
 const cardClass = computed(() => [
-	"group relative flex items-center rounded-md border border-slate-800 bg-slate-900/60 px-5 py-3 font-medium transition-all",
-	props.alreadyAdded ? "cursor-default opacity-50" : "hover:bg-white/10 hover:shadow-lg",
+	"group relative flex items-center rounded-md border border-default bg-elevated/50 px-5 py-3 font-medium transition-all",
+	props.alreadyAdded ? "cursor-default opacity-50" : "hover:bg-accented/50 hover:shadow-lg",
 ]);
 </script>
 

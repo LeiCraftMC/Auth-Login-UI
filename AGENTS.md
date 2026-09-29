@@ -22,8 +22,12 @@ tag v4.19.2). Follow the LeiCraft_MC Style Guides: https://git.leicraftmc.de/Lei
   record intentional differences in the README.
 - Zitadel is only reached as the **system API user** (`server/lib/zitadel/systemToken.ts`); the
   instance comes from the request host (`LoginContext.getServiceConfig`). No PAT / login client key.
-- Nuxt 4 `app/` srcDir; Tailwind v4 CSS-first; dark-only. Pages are client-rendered (`ssr: false`)
-  and served under `app.baseURL` (`/ui/v2/login/`, `NUXT_APP_BASE_URL`).
+- Nuxt 4 `app/` srcDir; Tailwind v4 CSS-first. Pages are client-rendered (`ssr: false`) and served
+  under `app.baseURL` (`/ui/v2/login/`, `NUXT_APP_BASE_URL`).
+- **Every branding (label policy) option must work** (colors, logos, icon, font, theme mode — see
+  `utils/branding.ts`, `useBrandingTheme`). Use NuxtUI's semantic colors (`bg-default`,
+  `bg-elevated`, `text-muted`, `border-default`, …) — never fixed `slate-*` / `white/*` classes —
+  so both themes and the branded colors apply.
 - The Hono API lives in `server/` and owns `<base>/api`; protocol routes (`/login`, `/healthy`,
   `/ready`, Zitadel proxy paths) are in `server/lib/protocol/`, dispatched by
   `server/middleware/protocol.ts`. Init in `server/plugins/startup.ts`.
@@ -42,6 +46,8 @@ tag v4.19.2). Follow the LeiCraft_MC Style Guides: https://git.leicraftmc.de/Lei
 
 ## Divergences from the fullstack template
 
+- Not dark-only: dark (LeiCraft_MC) by default, but the branding can force light, follow the system
+  or offer the light / system / dark switch, like the Zitadel login.
 - No database, email, cron or task queue; no bearer-token auth (the login state is the signed
   `sessions` cookie). Mutating API calls pass an `Origin` check instead (`API.isAllowedOrigin`).
 - Generated client uses `@hey-api/client-fetch` (like LAVIAC): client-nuxt's generated code fails

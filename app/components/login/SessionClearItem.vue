@@ -32,7 +32,7 @@ async function clear() {
 <template>
 	<button
 		type="button"
-		class="group flex w-full flex-row items-center rounded-md border border-slate-800 bg-slate-900/60 px-4 py-2 text-left transition-all hover:bg-white/10 hover:shadow-lg disabled:opacity-60"
+		class="group flex w-full flex-row items-center rounded-md border border-default bg-elevated/50 px-4 py-2 text-left transition-all hover:bg-accented/50 hover:shadow-lg disabled:opacity-60"
 		:disabled="loading"
 		@click="clear"
 	>

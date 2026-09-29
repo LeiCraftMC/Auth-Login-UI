@@ -181,7 +181,7 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 							type="button"
 							role="radio"
 							:aria-checked="selected === method.value"
-							class="flex flex-1 cursor-pointer flex-col items-center rounded-lg border border-slate-800 bg-slate-900/60 px-5 py-4 text-sm transition-all hover:bg-white/10 hover:shadow-lg"
+							class="flex flex-1 cursor-pointer flex-col items-center rounded-lg border border-default bg-elevated/50 px-5 py-4 text-sm transition-all hover:bg-accented/50 hover:shadow-lg"
 							:class="selected === method.value ? 'ring-2 ring-primary' : ''"
 							:data-testid="`${method.value}-radio`"
 							@click="selected = method.value"

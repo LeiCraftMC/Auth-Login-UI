@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { create } from "@bufbuild/protobuf";
 import { timestampFromMs } from "@bufbuild/protobuf/wkt";
+import { LoginDTO } from "../server/lib/api/utils/shared-models/loginModels";
 import { I18n } from "../server/lib/i18n";
 import { InstanceRoles } from "../server/lib/login/instanceRoles";
 import { MFA } from "../server/lib/login/mfa";
@@ -11,6 +12,10 @@ import {
 	RequestChallengesSchema,
 } from "../server/lib/zitadel/proto/zitadel/session/v2/challenge_pb";
 import { SessionSchema } from "../server/lib/zitadel/proto/zitadel/session/v2/session_pb";
+import {
+	BrandingSettingsSchema,
+	ThemeMode,
+} from "../server/lib/zitadel/proto/zitadel/settings/v2/branding_settings_pb";
 import {
 	LoginSettingsSchema,
 	PasskeysType,
@@ -198,5 +203,67 @@ describe("I18n", () => {
 		for (const { code } of I18n.LANGS) {
 			expect(keys(I18n.builtInMessages(code)).sort()).toEqual(english);
 		}
+	});
+});
+
+describe("LoginDTO.branding", () => {
+	test("passes every customized value of the label policy", () => {
+		const branding = LoginDTO.branding(
+			create(BrandingSettingsSchema, {
+				lightTheme: {
+					primaryColor: "#E11D48",
+					backgroundColor: "#FFF",
+					warnColor: "#b91c1c",
+					fontColor: "#111111",
+					logoUrl: "https://auth.example.com/assets/v1/logo-light.png",
+					iconUrl: "https://auth.example.com/assets/v1/icon-light.png",
+				},
+				darkTheme: { primaryColor: "#f43f5e", logoUrl: "https://auth.example.com/assets/v1/logo.png" },
+				fontUrl: "https://auth.example.com/assets/v1/font.ttf",
+				themeMode: ThemeMode.LIGHT,
+				hideLoginNameSuffix: true,
+			}),
+		);
+
+		expect(branding.light).toEqual({
+			primaryColor: "#e11d48",
+			backgroundColor: "#ffffff",
+			warnColor: "#b91c1c",
+			fontColor: "#111111",
+			logoUrl: "https://auth.example.com/assets/v1/logo-light.png",
+			iconUrl: "https://auth.example.com/assets/v1/icon-light.png",
+		});
+		expect(branding.dark.primaryColor).toBe("#f43f5e");
+		expect(branding.dark.logoUrl).toBe("https://auth.example.com/assets/v1/logo.png");
+		expect(branding.fontUrl).toBe("https://auth.example.com/assets/v1/font.ttf");
+		expect(branding.themeMode).toBe("light");
+		expect(branding.hideLoginNameSuffix).toBe(true);
+	});
+
+	test("treats Zitadel's default colors as not customized and drops invalid values", () => {
+		const branding = LoginDTO.branding(
+			create(BrandingSettingsSchema, {
+				lightTheme: {
+					primaryColor: "#5469d4",
+					backgroundColor: "#fafafa",
+					warnColor: "#cd3d56",
+					fontColor: "#000000",
+					logoUrl: "javascript:alert(1)",
+				},
+				darkTheme: {
+					primaryColor: "#2073c4",
+					backgroundColor: "#111827",
+					warnColor: "#ff3b5b",
+					fontColor: "#fff",
+				},
+				fontUrl: "not a url",
+			}),
+		);
+
+		expect(branding.light).toEqual({});
+		expect(branding.dark).toEqual({});
+		expect(branding.fontUrl).toBeUndefined();
+		expect(branding.themeMode).toBe("unspecified");
+		expect(LoginDTO.branding(undefined).themeMode).toBe("unspecified");
 	});
 });

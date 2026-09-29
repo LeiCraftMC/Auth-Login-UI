@@ -7,6 +7,8 @@ const props = defineProps<{
 
 const t = useTranslations("common");
 
+useBrandingTheme();
+
 useSeoMeta({ title: () => `${props.error.statusCode} | ${t("title")}` });
 
 function backToLogin() {
@@ -15,9 +17,9 @@ function backToLogin() {
 </script>
 
 <template>
-	<div class="main-bg-color flex min-h-screen flex-col text-slate-100">
+	<div class="main-bg-color flex min-h-screen flex-col text-default">
 		<UMain class="flex flex-1 items-center justify-center p-4">
-			<UPageCard class="w-full max-w-md border-slate-800" :ui="{ container: 'gap-y-6 p-6 sm:p-8' }">
+			<UPageCard class="w-full max-w-md" :ui="{ container: 'gap-y-6 p-6 sm:p-8' }">
 				<div class="flex justify-center">
 					<ImgAppLogo class="h-10" />
 				</div>

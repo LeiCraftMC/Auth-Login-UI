@@ -19,14 +19,14 @@ const accountsLink = computed(() =>
 </script>
 
 <template>
-	<div class="flex h-full w-full flex-row items-center rounded-full border border-white/20 p-px text-left">
+	<div class="flex h-full w-full flex-row items-center rounded-full border border-accented p-px text-left">
 		<LoginAvatar size="small" :name="displayName ?? loginName ?? ''" :login-name="loginName ?? ''" />
 		<span class="ml-4 max-w-[250px] truncate pr-4 text-sm">{{ loginName }}</span>
 		<span class="grow" />
 		<ULink
 			v-if="showDropdown"
 			:to="accountsLink"
-			class="mr-1 ml-4 flex items-center justify-center rounded-full p-1 transition-all hover:bg-white/10"
+			class="mr-1 ml-4 flex items-center justify-center rounded-full p-1 transition-all hover:bg-accented/50"
 			aria-label="accounts"
 		>
 			<UIcon name="i-lucide-chevron-down" class="h-4 w-4" />

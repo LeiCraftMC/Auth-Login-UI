@@ -1,6 +1,6 @@
 /**
- * Avatar colors derived from the login name (Zitadel login: `helpers/colors.ts` getColorHash),
- * using the dark variant of the Tailwind palette.
+ * Avatar colors derived from the login name (Zitadel login: `helpers/colors.ts` getColorHash):
+ * the 900 and 200 shades of the Tailwind palette (swapped in the light theme, see LoginAvatar).
  */
 const AVATAR_COLORS = [
 	{ background: "#7f1d1d", text: "#fecaca" }, // red
@@ -72,7 +72,19 @@ export function relativeLuminance(hex: string): number {
 	return 0.2126 * r + 0.7152 * g + 0.0722 * b;
 }
 
-/** Text color that stays readable on the given background color. */
+const DARK_TEXT = "#0f172a";
+const LIGHT_TEXT = "#ffffff";
+
+/** WCAG contrast ratio of two relative luminances. */
+function contrastRatio(a: number, b: number) {
+	return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+}
+
+/** Dark or white text, whichever contrasts more with the given background color. */
 export function contrastTextColor(hex: string) {
-	return relativeLuminance(hex) > 0.35 ? "#0f172a" : "#ffffff";
+	const background = relativeLuminance(hex);
+	return contrastRatio(background, relativeLuminance(DARK_TEXT)) >
+		contrastRatio(background, relativeLuminance(LIGHT_TEXT))
+		? DARK_TEXT
+		: LIGHT_TEXT;
 }

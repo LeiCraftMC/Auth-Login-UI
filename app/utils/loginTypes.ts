@@ -14,6 +14,10 @@ import type {
 
 export type LoginBranding = GetSettingsBrandingResponses[200]["data"]["branding"];
 
+export type LoginBrandingTheme = LoginBranding["light"];
+
+export type LoginThemeMode = LoginBranding["themeMode"];
+
 export type LoginSettings = NonNullable<GetLoginnameResponses[200]["data"]["loginSettings"]>;
 
 export type LoginSecondFactor = LoginSettings["secondFactors"][number];

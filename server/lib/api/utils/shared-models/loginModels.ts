@@ -6,7 +6,11 @@ import { type Timestamp, timestampMs } from "@bufbuild/protobuf/wkt";
 import { z } from "zod";
 import { IDP_SLUGS, IdpTypes } from "../../../login/idpTypes";
 import type { Session } from "../../../zitadel/proto/zitadel/session/v2/session_pb";
-import type { BrandingSettings } from "../../../zitadel/proto/zitadel/settings/v2/branding_settings_pb";
+import {
+	type BrandingSettings,
+	type Theme,
+	ThemeMode,
+} from "../../../zitadel/proto/zitadel/settings/v2/branding_settings_pb";
 import type { LegalAndSupportSettings } from "../../../zitadel/proto/zitadel/settings/v2/legal_settings_pb";
 import {
 	type IdentityProvider,
@@ -18,12 +22,49 @@ import type { PasswordComplexitySettings } from "../../../zitadel/proto/zitadel/
 import { AuthenticationMethodType } from "../../../zitadel/proto/zitadel/user/v2/user_service_pb";
 
 /**
- * Colors of Zitadel's default label policy (cmd/defaults.yaml). An instance that still uses them
- * has not customized its branding, so the LeiCraft_MC primary color is kept.
+ * Colors of Zitadel's default label policy (cmd/defaults.yaml, light and dark, plus the fallbacks
+ * of older Zitadel versions and of the Zitadel login). A color that still has one of these values
+ * was not customized, so the LeiCraft_MC design keeps its own color for it.
  */
-const ZITADEL_DEFAULT_PRIMARY_COLORS = new Set(["#5469d4", "#2073c4", "#bbbafa", "#eeeeee"]);
+const ZITADEL_DEFAULT_COLORS = {
+	primaryColor: new Set(["#5469d4", "#2073c4", "#bbbafa", "#eeeeee"]),
+	backgroundColor: new Set(["#fafafa", "#111827", "#252526", "#212224"]),
+	warnColor: new Set(["#cd3d56", "#ff3b5b"]),
+	fontColor: new Set(["#000000", "#ffffff"]),
+} as const;
 
 const HEX_COLOR = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+
+/** `#ABC` → `#aabbcc` */
+function normalizeHex(color: string) {
+	const value = color.toLowerCase();
+	return value.length === 4 ? `#${[...value.slice(1)].map((c) => c + c).join("")}` : value;
+}
+
+/** A customized color of the label policy, or undefined (unset, invalid or Zitadel's default). */
+function customColor(kind: keyof typeof ZITADEL_DEFAULT_COLORS, color: string | undefined) {
+	if (!color || !HEX_COLOR.test(color)) return undefined;
+	const normalized = normalizeHex(color);
+	return ZITADEL_DEFAULT_COLORS[kind].has(normalized) ? undefined : normalized;
+}
+
+/** Only absolute http(s) URLs (the asset URLs of Zitadel) are passed to the browser. */
+function assetUrl(url: string | undefined) {
+	if (!url) return undefined;
+	try {
+		const parsed = new URL(url);
+		return parsed.protocol === "https:" || parsed.protocol === "http:" ? parsed.href : undefined;
+	} catch {
+		return undefined;
+	}
+}
+
+const THEME_MODES = {
+	[ThemeMode.UNSPECIFIED]: "unspecified",
+	[ThemeMode.AUTO]: "auto",
+	[ThemeMode.LIGHT]: "light",
+	[ThemeMode.DARK]: "dark",
+} as const;
 
 function ms(ts: Timestamp | undefined) {
 	return ts ? Number(timestampMs(ts)) : undefined;
@@ -91,12 +132,25 @@ export namespace LoginModels {
 	});
 	export type LoginSettings = z.infer<typeof LoginSettings>;
 
-	export const Branding = z.object({
-		/** Logo for dark backgrounds (the login is dark-only), if the instance/org set one. */
+	/** One theme of the label policy; colors only when customized (see `customColor`). */
+	export const BrandingTheme = z.object({
+		primaryColor: z.string().optional(),
+		backgroundColor: z.string().optional(),
+		warnColor: z.string().optional(),
+		fontColor: z.string().optional(),
 		logoUrl: z.string().optional(),
 		iconUrl: z.string().optional(),
-		/** Customized primary color (hex); unset when the Zitadel default is still in use. */
-		primaryColor: z.string().optional(),
+	});
+	export type BrandingTheme = z.infer<typeof BrandingTheme>;
+
+	/** The label policy (branding) of the instance / organization. */
+	export const Branding = z.object({
+		light: BrandingTheme,
+		dark: BrandingTheme,
+		/** Custom font file (applied with the LeiCraft_MC font as fallback). */
+		fontUrl: z.string().optional(),
+		/** `light` / `dark` force the theme; `auto` follows the system; `unspecified` = LeiCraft_MC default (dark). */
+		themeMode: z.enum(["unspecified", "auto", "light", "dark"]),
 		hideLoginNameSuffix: z.boolean(),
 	});
 	export type Branding = z.infer<typeof Branding>;
@@ -238,23 +292,27 @@ export class LoginDTO {
 		};
 	}
 
+	static brandingTheme(theme: Theme | undefined): LoginModels.BrandingTheme {
+		return {
+			primaryColor: customColor("primaryColor", theme?.primaryColor),
+			backgroundColor: customColor("backgroundColor", theme?.backgroundColor),
+			warnColor: customColor("warnColor", theme?.warnColor),
+			fontColor: customColor("fontColor", theme?.fontColor),
+			logoUrl: assetUrl(theme?.logoUrl),
+			iconUrl: assetUrl(theme?.iconUrl),
+		};
+	}
+
 	/**
-	 * LeiCraft_MC design with the instance's identity: the dark-theme logo/icon and the primary
-	 * color, unless it is still Zitadel's default.
+	 * The complete label policy on top of the LeiCraft_MC design: every customized value is applied
+	 * by the frontend (useBrandingTheme), Zitadel's defaults keep the LeiCraft_MC look.
 	 */
 	static branding(branding: BrandingSettings | undefined | null): LoginModels.Branding {
-		const dark = branding?.darkTheme;
-		const light = branding?.lightTheme;
-		const primary = dark?.primaryColor || light?.primaryColor;
-		const customPrimary =
-			primary && HEX_COLOR.test(primary) && !ZITADEL_DEFAULT_PRIMARY_COLORS.has(primary.toLowerCase())
-				? primary
-				: undefined;
-
 		return {
-			logoUrl: dark?.logoUrl || undefined,
-			iconUrl: dark?.iconUrl || light?.iconUrl || undefined,
-			primaryColor: customPrimary,
+			light: LoginDTO.brandingTheme(branding?.lightTheme),
+			dark: LoginDTO.brandingTheme(branding?.darkTheme),
+			fontUrl: assetUrl(branding?.fontUrl),
+			themeMode: THEME_MODES[branding?.themeMode ?? ThemeMode.UNSPECIFIED] ?? "unspecified",
 			hideLoginNameSuffix: !!branding?.hideLoginNameSuffix,
 		};
 	}

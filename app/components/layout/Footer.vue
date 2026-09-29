@@ -6,7 +6,7 @@ const links = [
 </script>
 
 <template>
-	<nav class="flex items-center gap-3 text-xs text-slate-500">
+	<nav class="flex items-center gap-3 text-xs text-muted">
 		<ULink
 			v-for="link in links"
 			:key="link.label"

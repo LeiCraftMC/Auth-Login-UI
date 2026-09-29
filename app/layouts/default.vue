@@ -1,8 +1,8 @@
 <script setup lang="ts">
 /**
- * The login layout: one centered card on the LeiCraft_MC background, the language switcher and the
- * legal links below it. Loads the translations (with the custom texts of `?organization=`)
- * before the page renders.
+ * The login layout: one centered card on the LeiCraft_MC background, the language and theme
+ * switchers and the legal links below it. Loads the translations (with the custom texts of
+ * `?organization=`) before the page renders and applies the branding of the page.
  */
 import { useI18nStore } from "~/composables/stores/useI18nStore";
 
@@ -10,6 +10,8 @@ const route = useRoute();
 const i18nStore = useI18nStore();
 const i18n = i18nStore.data;
 const t = useTranslations("common");
+
+useBrandingTheme();
 
 const ready = ref(false);
 
@@ -41,7 +43,7 @@ useHead({
 <template>
 	<NuxtLoadingIndicator color="var(--ui-primary)" position="top" />
 
-	<div class="main-bg-color flex min-h-screen flex-col text-slate-100">
+	<div class="main-bg-color flex min-h-screen flex-col text-default">
 		<UMain class="relative flex flex-1 flex-col">
 			<div
 				class="pointer-events-none absolute inset-0 bg-linear-to-b from-transparent via-primary/5 to-transparent"
@@ -52,7 +54,10 @@ useHead({
 					<LoginCard v-else loading />
 
 					<div class="flex items-center justify-between gap-4">
-						<LoginLanguageSwitcher />
+						<div class="flex items-center gap-2">
+							<LoginLanguageSwitcher />
+							<LoginThemeSwitch />
+						</div>
 						<LayoutFooter />
 					</div>
 				</div>

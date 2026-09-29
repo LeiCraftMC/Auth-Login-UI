@@ -5,7 +5,7 @@ export default defineAppConfig({
 			neutral: "slate",
 		},
 		button: {
-			// Text on solid primary buttons follows the branding color (useBrandingTheme).
+			// Text on solid primary buttons follows the branding color (utils/branding.ts).
 			compoundVariants: [
 				{ color: "primary", variant: "solid", class: "text-(color:--login-on-primary)" },
 			],

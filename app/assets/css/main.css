@@ -1,9 +1,11 @@
 /*
  * main.css — Tailwind v4 CSS-first entry (no tailwind.config.js).
  *
- * Dark-only (no light theme, no toggle) — `colorMode` is pinned to dark in nuxt.config.ts. The
- * primary color is NuxtUI's (`app.config.ts`) unless the Zitadel branding of the instance /
- * organization sets one (composables/useBrandingTheme.ts overrides `--ui-primary`).
+ * LeiCraft_MC design, dark by default. The Zitadel branding of the instance / organization can
+ * force the light theme, follow the system or offer a theme switch, and override colors and the
+ * font: utils/branding.ts writes those values over the tokens below and NuxtUI's (`--ui-*`).
+ * Components use NuxtUI's semantic colors (`bg-default`, `text-muted`, `border-default`, …) so
+ * both themes and the branded colors apply everywhere.
  */
 @import "tailwindcss";
 @import "@nuxt/ui";
@@ -13,16 +15,23 @@
 }
 
 :root {
-	color-scheme: dark;
+	color-scheme: light;
+	/* page background behind the card */
+	--login-page-bg: var(--ui-color-neutral-100);
 	/* text on primary-colored surfaces; flipped for a light/dark branding color */
 	--login-on-primary: var(--ui-text-inverted);
+}
+
+.dark {
+	color-scheme: dark;
+	/* slate-950 — the LeiCraft_MC app background */
+	--login-page-bg: rgb(2 6 23);
 }
 
 html {
 	scroll-behavior: smooth;
 }
 
-/* slate-950 — the app background. */
 .main-bg-color {
-	background-color: rgb(2 6 23);
+	background-color: var(--login-page-bg);
 }

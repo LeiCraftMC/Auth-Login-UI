@@ -37,9 +37,24 @@ export type GetSettingsBrandingResponses = {
         message: 'Branding loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
             defaultOrganization?: string;
@@ -165,9 +180,24 @@ export type GetLoginnameResponses = {
         message: 'Page data loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
             loginSettings: {
@@ -277,9 +307,24 @@ export type GetAccountsResponses = {
         message: 'Page data loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
             sessions: Array<{
@@ -356,9 +401,24 @@ export type GetPasswordResponses = {
         message: 'Page data loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
             loginSettings: {
@@ -538,9 +598,24 @@ export type GetPasswordSetResponses = {
         message: 'Page data loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
             error?: 'couldNotGetLoginSettings';
@@ -670,9 +745,24 @@ export type GetPasswordChangeResponses = {
         message: 'Page data loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
             session: {
@@ -795,9 +885,24 @@ export type GetPasskeyResponses = {
         message: 'Page data loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
             session: {
@@ -925,9 +1030,24 @@ export type GetPasskeySetResponses = {
         message: 'Page data loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
             session: {
@@ -1097,9 +1217,24 @@ export type GetU2fResponses = {
         message: 'Page data loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
             session: {
@@ -1176,9 +1311,24 @@ export type GetU2fSetResponses = {
         message: 'Page data loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
             session: {
@@ -1391,9 +1541,24 @@ export type GetOtpByMethodResponses = {
         message: 'Page data loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
             session: {
@@ -1486,9 +1651,24 @@ export type PostOtpByMethodSetResponses = {
         message: 'OTP setup started';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
             session: {
@@ -1585,9 +1765,24 @@ export type GetMfaResponses = {
         message: 'Page data loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
             session: {
@@ -1667,9 +1862,24 @@ export type GetMfaSetResponses = {
         message: 'Page data loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
             session: {
@@ -1814,9 +2024,24 @@ export type GetAuthenticatorSetResponses = {
             error?: 'sessionExpired' | 'unknownContext';
             redirect?: string;
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             } | null;
             session: {
@@ -2139,9 +2364,24 @@ export type GetRegisterResponses = {
         message: 'Page data loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
             organization?: string;
@@ -2261,9 +2501,24 @@ export type GetRegisterPasswordResponses = {
         message: 'Page data loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
             organization?: string;
@@ -2387,9 +2642,24 @@ export type GetVerifyResponses = {
         message: 'Page data loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
             session: {
@@ -2523,9 +2793,24 @@ export type GetVerifySuccessResponses = {
         message: 'Page data loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
             session: {
@@ -2647,9 +2932,24 @@ export type GetSignedinResponses = {
         message: 'Page data loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
             session: {
@@ -2726,9 +3026,24 @@ export type GetLogoutResponses = {
         message: 'Page data loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
             sessions: Array<{
@@ -2806,9 +3121,24 @@ export type GetDeviceResponses = {
         message: 'Page data loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
         };
@@ -2852,9 +3182,24 @@ export type GetDeviceConsentResponses = {
         data: {
             error?: 'noUserCode' | 'noDeviceRequest';
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             } | null;
             deviceAuthorizationRequest: {
@@ -3015,9 +3360,24 @@ export type GetIdpResponses = {
         message: 'Page data loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
             identityProviders: Array<{
@@ -3064,9 +3424,24 @@ export type GetIdpLdapResponses = {
         message: 'Page data loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
         };
@@ -3160,9 +3535,24 @@ export type GetIdpFailureResponses = {
         message: 'Page data loaded';
         data: {
             branding: {
-                logoUrl?: string;
-                iconUrl?: string;
-                primaryColor?: string;
+                light: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                dark: {
+                    primaryColor?: string;
+                    backgroundColor?: string;
+                    warnColor?: string;
+                    fontColor?: string;
+                    logoUrl?: string;
+                    iconUrl?: string;
+                };
+                fontUrl?: string;
+                themeMode: 'unspecified' | 'auto' | 'light' | 'dark';
                 hideLoginNameSuffix: boolean;
             };
             loginSettings: {

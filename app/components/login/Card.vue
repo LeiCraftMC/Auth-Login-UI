@@ -1,9 +1,11 @@
 <script setup lang="ts">
 /**
  * LoginCard — the branded card every login page renders into (Zitadel login: `DynamicTheme`):
- * the instance / organization logo (or the LeiCraft_MC logo), a centered title block and the
- * page content. Applies the branding's primary color (useBrandingTheme).
+ * the logo of the instance / organization for the current theme (the other theme's logo, or the
+ * LeiCraft_MC logo, if it has none), a centered title block and the page content. Hands the page's
+ * branding to the layout, which applies it (useBrandingTheme).
  */
+import { useBrandingStore } from "~/composables/stores/useBrandingStore";
 import type { LoginBranding } from "~/utils/loginTypes";
 
 const props = defineProps<{
@@ -12,19 +14,38 @@ const props = defineProps<{
 	loading?: boolean;
 }>();
 
-useBrandingTheme(() => props.branding);
+const brandingStore = useBrandingStore();
+const colorMode = useColorMode();
+
+watch(
+	() => props.branding,
+	(branding) => {
+		if (branding) brandingStore.update(branding);
+	},
+	{ immediate: true },
+);
+
+// while the next page loads, the previous page's branding keeps the logo in place
+const current = computed(() => props.branding ?? brandingStore.data.value);
+const logoUrl = computed(() => {
+	const branding = current.value;
+	if (!branding) return undefined;
+	const [own, other] =
+		colorMode.value === "dark" ? [branding.dark, branding.light] : [branding.light, branding.dark];
+	return own.logoUrl ?? other.logoUrl;
+});
 </script>
 
 <template>
-	<UPageCard class="w-full border-slate-800" :ui="{ container: 'gap-y-6 p-6 sm:p-8' }">
+	<UPageCard class="w-full" :ui="{ container: 'gap-y-6 p-6 sm:p-8' }">
 		<div class="flex min-h-10 justify-center">
 			<img
-				v-if="branding?.logoUrl"
-				:src="branding.logoUrl"
+				v-if="logoUrl"
+				:src="logoUrl"
 				alt="logo"
 				class="max-h-[150px] max-w-[150px] object-contain"
 			/>
-			<ImgAppLogo v-else-if="!loading" class="h-10" />
+			<ImgAppLogo v-else-if="current || !loading" class="h-10" />
 		</div>
 
 		<template v-if="loading">

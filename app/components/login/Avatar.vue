@@ -10,7 +10,15 @@ const props = withDefaults(
 	{ size: "base" },
 );
 
-const color = computed(() => avatarColor(props.loginName));
+const colorMode = useColorMode();
+
+// dark shade with light text in the dark theme, the other way round in the light theme
+const style = computed(() => {
+	const color = avatarColor(props.loginName);
+	return colorMode.value === "dark"
+		? { backgroundColor: color.background, color: color.text }
+		: { backgroundColor: color.text, color: color.background };
+});
 const text = computed(() => initials(props.name ?? props.loginName, props.loginName));
 </script>
 
@@ -22,7 +30,7 @@ const text = computed(() => initials(props.name ?? props.loginName, props.loginN
 			'h-[38px] w-[38px] text-[13px]': size === 'base',
 			'h-20 w-20 text-xl font-normal': size === 'large',
 		}"
-		:style="{ backgroundColor: color.background, color: color.text }"
+		:style="style"
 	>
 		<img v-if="imageUrl" :src="imageUrl" alt="avatar" class="h-full w-full object-cover" />
 		<span v-else>{{ text }}</span>
