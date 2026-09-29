@@ -6,6 +6,9 @@ FROM oven/bun:1-slim
 
 WORKDIR /opt/leicraftmc/auth/login-ui
 
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY .output ./app/.output
 
 EXPOSE 12192/tcp
