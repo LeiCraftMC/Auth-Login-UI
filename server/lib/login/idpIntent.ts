@@ -4,8 +4,9 @@
  * Consumes the single-use intent token once and decides: explicit linking, sign-in of an existing
  * user, auto-linking, auto-creation, manual registration, or "account not found".
  */
-import { create } from "@bufbuild/protobuf";
+
 import { createHash } from "node:crypto";
+import { create } from "@bufbuild/protobuf";
 import { Code } from "@connectrpc/connect";
 import { Logger } from "../utils/logger";
 import { type ServiceConfig, type Translate, ZitadelAPI } from "../zitadel/api";
@@ -79,7 +80,10 @@ export class LoginIdpIntent {
 	}
 
 	/** Request for the non-deprecated CreateUser endpoint with the resolved organization injected. */
-	static buildCreateUserRequest(intent: IDPIntentResult, organizationId: string): CreateUserRequest | undefined {
+	static buildCreateUserRequest(
+		intent: IDPIntentResult,
+		organizationId: string,
+	): CreateUserRequest | undefined {
 		if (intent.userAction?.case === "createUser") {
 			return create(CreateUserRequestSchema, { ...intent.userAction.value, organizationId });
 		}
@@ -102,7 +106,10 @@ export class LoginIdpIntent {
 	 * Request for UpdateUser: only profile, email, phone and metadata are synced (not the username,
 	 * which would invalidate sessions on every login).
 	 */
-	static buildUpdateUserRequest(intent: IDPIntentResult, userId: string): UpdateUserRequest | undefined {
+	static buildUpdateUserRequest(
+		intent: IDPIntentResult,
+		userId: string,
+	): UpdateUserRequest | undefined {
 		if (intent.userAction?.case === "updateUser") {
 			const request = intent.userAction.value;
 			const human = request.userType?.case === "human" ? request.userType.value : undefined;
@@ -162,7 +169,10 @@ export class LoginIdpIntent {
 			const orgToCheck = orgs.result && orgs.result.length === 1 ? orgs.result[0]?.id : undefined;
 
 			if (orgToCheck) {
-				const orgLoginSettings = await ZitadelAPI.getLoginSettings({ serviceConfig, organization: orgToCheck });
+				const orgLoginSettings = await ZitadelAPI.getLoginSettings({
+					serviceConfig,
+					organization: orgToCheck,
+				});
 				if (orgLoginSettings?.allowDomainDiscovery) return orgToCheck;
 			}
 		}
@@ -182,7 +192,10 @@ export class LoginIdpIntent {
 		userOrganizationId: string;
 		idpId: string;
 	}): Promise<boolean> {
-		const loginSettings = await ZitadelAPI.getLoginSettings({ serviceConfig, organization: userOrganizationId });
+		const loginSettings = await ZitadelAPI.getLoginSettings({
+			serviceConfig,
+			organization: userOrganizationId,
+		});
 		if (!loginSettings?.allowExternalIdp) return false;
 
 		const activeIDPs = await ZitadelAPI.getActiveIdentityProviders({
@@ -210,15 +223,21 @@ export class LoginIdpIntent {
 			Logger.error("Error creating session", sessionResult.error);
 			return { error: sessionResult.error };
 		}
-		if ("redirect" in sessionResult && sessionResult.redirect) return { redirect: sessionResult.redirect };
-		if ("samlData" in sessionResult && sessionResult.samlData) return { samlData: sessionResult.samlData };
+		if ("redirect" in sessionResult && sessionResult.redirect)
+			return { redirect: sessionResult.redirect };
+		if ("samlData" in sessionResult && sessionResult.samlData)
+			return { samlData: sessionResult.samlData };
 		return { error: t("errors.sessionCreationFailed") };
 	}
 
 	/** CASE 1 helper: the user of the session to link to, if the session may enroll. */
 	private static async resolveUserIdFromSession(
 		ctx: LoginContext,
-		{ sessionId, serviceConfig, provider }: { sessionId: string; serviceConfig: ServiceConfig; provider: string },
+		{
+			sessionId,
+			serviceConfig,
+			provider,
+		}: { sessionId: string; serviceConfig: ServiceConfig; provider: string },
 	): Promise<{ userId?: string; redirect?: string }> {
 		const failed = { redirect: `/idp/${provider}/linking-failed?error=session_invalid` };
 		try {
@@ -282,15 +301,23 @@ export class LoginIdpIntent {
 		}
 
 		// 2. resolve the user of the (authorized) session
-		const resolved = await LoginIdpIntent.resolveUserIdFromSession(ctx, { sessionId, serviceConfig, provider });
+		const resolved = await LoginIdpIntent.resolveUserIdFromSession(ctx, {
+			sessionId,
+			serviceConfig,
+			provider,
+		});
 		if (resolved.redirect || !resolved.userId) {
-			return { redirect: resolved.redirect || `/idp/${provider}/linking-failed?error=session_invalid` };
+			return {
+				redirect: resolved.redirect || `/idp/${provider}/linking-failed?error=session_invalid`,
+			};
 		}
 
 		// 3. link
 		if (!options?.isLinkingAllowed) {
 			Logger.error("Linking not allowed by IDP configuration");
-			return { redirect: `/idp/${provider}/linking-failed?${buildRedirectParams()}&error=linking_not_allowed` };
+			return {
+				redirect: `/idp/${provider}/linking-failed?${buildRedirectParams()}&error=linking_not_allowed`,
+			};
 		}
 
 		try {
@@ -298,7 +325,9 @@ export class LoginIdpIntent {
 
 			if (!targetUser?.details?.resourceOwner) {
 				Logger.error("User not found or missing organization");
-				return { redirect: `/idp/${provider}/linking-failed?${buildRedirectParams()}&error=user_not_found` };
+				return {
+					redirect: `/idp/${provider}/linking-failed?${buildRedirectParams()}&error=user_not_found`,
+				};
 			}
 
 			const isAllowed = await LoginIdpIntent.validateIDPLinkingPermissions({
@@ -308,7 +337,9 @@ export class LoginIdpIntent {
 			});
 			if (!isAllowed) {
 				Logger.error("IDP linking validation failed");
-				return { redirect: `/idp/${provider}/linking-failed?${buildRedirectParams()}&error=validation_failed` };
+				return {
+					redirect: `/idp/${provider}/linking-failed?${buildRedirectParams()}&error=validation_failed`,
+				};
 			}
 
 			await ZitadelAPI.addIDPLink({
@@ -368,13 +399,18 @@ export class LoginIdpIntent {
 
 		if (!options?.autoLinking) return null;
 
-		let foundUser: Awaited<ReturnType<typeof ZitadelAPI.listUsers>>["result"][number] | null | undefined;
+		let foundUser:
+			| Awaited<ReturnType<typeof ZitadelAPI.listUsers>>["result"][number]
+			| null
+			| undefined;
 		const email = createUserData?.email?.email;
 		const emailVerified =
-			createUserData?.email?.verification?.case === "isVerified" && createUserData?.email?.verification?.value;
+			createUserData?.email?.verification?.case === "isVerified" &&
+			createUserData?.email?.verification?.value;
 
 		if (options.autoLinking === AutoLinkingOption.EMAIL && email && emailVerified) {
-			foundUser = (await ZitadelAPI.listUsers({ serviceConfig, email, organizationId: organization })).result?.[0];
+			foundUser = (await ZitadelAPI.listUsers({ serviceConfig, email, organizationId: organization }))
+				.result?.[0];
 		} else if (options.autoLinking === AutoLinkingOption.USERNAME) {
 			foundUser = (
 				await ZitadelAPI.listUsers({
@@ -402,7 +438,9 @@ export class LoginIdpIntent {
 			});
 			if (!isAllowed) {
 				Logger.error("Auto-linking validation failed");
-				return { redirect: `/idp/${provider}/linking-failed?${buildRedirectParams()}&error=validation_failed` };
+				return {
+					redirect: `/idp/${provider}/linking-failed?${buildRedirectParams()}&error=validation_failed`,
+				};
 			}
 
 			await ZitadelAPI.addIDPLink({
@@ -423,12 +461,18 @@ export class LoginIdpIntent {
 		} catch (error) {
 			Logger.error("Error auto-linking user", error);
 			const errorMessage = error instanceof Error ? error.message : t("errors.unknownError");
-			return { redirect: `/idp/${provider}/linking-failed?${buildRedirectParams({ error: errorMessage })}` };
+			return {
+				redirect: `/idp/${provider}/linking-failed?${buildRedirectParams({ error: errorMessage })}`,
+			};
 		}
 	}
 
 	/** Parameters for the complete-registration form (the token is needed to create the session). */
-	private static completeRegistrationParams(h: IDPHandlerContext, org: string, data: ResolvedCreateUser) {
+	private static completeRegistrationParams(
+		h: IDPHandlerContext,
+		org: string,
+		data: ResolvedCreateUser,
+	) {
 		const { idpInformation } = h.intent;
 		return h.buildRedirectParams(
 			{
@@ -460,14 +504,18 @@ export class LoginIdpIntent {
 		});
 		if (!orgToRegisterOn) {
 			Logger.error("Could not determine organization for auto-creation (no default org available)");
-			return { redirect: `/idp/${provider}/failure?${buildRedirectParams()}&error=no_organization_context` };
+			return {
+				redirect: `/idp/${provider}/failure?${buildRedirectParams()}&error=no_organization_context`,
+			};
 		}
 
 		// required profile fields missing: let the user complete them
 		if (!createUserData.profile?.givenName || !createUserData.profile?.familyName) {
 			if (!idpInformation?.userId) {
 				Logger.error("IDP intent missing userId, cannot redirect to complete registration");
-				return { redirect: `/idp/${provider}/failure?${buildRedirectParams()}&error=missing_idp_user_info` };
+				return {
+					redirect: `/idp/${provider}/failure?${buildRedirectParams()}&error=missing_idp_user_info`,
+				};
 			}
 			const params = LoginIdpIntent.completeRegistrationParams(h, orgToRegisterOn, createUserData);
 			return { redirect: `/idp/${provider}/complete-registration?${params}` };
@@ -476,7 +524,9 @@ export class LoginIdpIntent {
 		const createUserRequest = LoginIdpIntent.buildCreateUserRequest(intent, orgToRegisterOn);
 		if (!createUserRequest) {
 			Logger.error("Could not build create user request from intent");
-			return { redirect: `/idp/${provider}/failure?${buildRedirectParams()}&error=user_creation_failed` };
+			return {
+				redirect: `/idp/${provider}/failure?${buildRedirectParams()}&error=user_creation_failed`,
+			};
 		}
 
 		try {
@@ -488,7 +538,9 @@ export class LoginIdpIntent {
 			return LoginIdpIntent.sessionResult(ctx, t, newUser.id, h);
 		} catch (error) {
 			Logger.error("Error auto-creating user", error);
-			return { redirect: `/idp/${provider}/failure?${buildRedirectParams()}&error=user_creation_failed` };
+			return {
+				redirect: `/idp/${provider}/failure?${buildRedirectParams()}&error=user_creation_failed`,
+			};
 		}
 	}
 
@@ -513,7 +565,9 @@ export class LoginIdpIntent {
 
 		if (!idpInformation?.userId) {
 			Logger.error("IDP intent missing userId, cannot redirect to complete registration");
-			return { redirect: `/idp/${provider}/failure?${buildRedirectParams()}&error=missing_idp_user_info` };
+			return {
+				redirect: `/idp/${provider}/failure?${buildRedirectParams()}&error=missing_idp_user_info`,
+			};
 		}
 
 		const params = LoginIdpIntent.completeRegistrationParams(h, orgToRegisterOn, createUserData);
@@ -572,7 +626,10 @@ export class LoginIdpIntent {
 			const idp = await ZitadelAPI.getIDPByID({ serviceConfig, id: intent.idpInformation.idpId });
 			if (!idp) return { error: t("errors.idpNotFound") };
 
-			const buildRedirectParams = (additionalParams?: Record<string, string>, includeToken = false) => {
+			const buildRedirectParams = (
+				additionalParams?: Record<string, string>,
+				includeToken = false,
+			) => {
 				const params = new URLSearchParams();
 				params.set("id", id);
 				if (includeToken) params.set("token", token);
@@ -593,7 +650,16 @@ export class LoginIdpIntent {
 				intent,
 				idp,
 				options: idp.config?.options,
-				params: { provider, id, token, requestId, organization, postErrorRedirectUrl, sessionId, linkFingerprint },
+				params: {
+					provider,
+					id,
+					token,
+					requestId,
+					organization,
+					postErrorRedirectUrl,
+					sessionId,
+					linkFingerprint,
+				},
 				buildRedirectParams,
 			};
 

@@ -1,14 +1,13 @@
 /**
- * useRuntimeAppConfigs — typed access to publicRuntimeConfig.
- *
- * The template exposes `apiUrl` and `appUrl` from `nuxt.config.ts` under `publicRuntimeConfig`.
- * This composable wraps them with safe fallbacks for SSR and client.
- * See docs/05-api-contract.md and docs/07-state-and-data.md.
+ * useRuntimeAppConfigs — where the login is served. The app runs under the Zitadel login base path
+ * (`app.baseURL`, default `/ui/v2/login/`, set with NUXT_APP_BASE_URL) and calls its API
+ * same-origin at `<base>/api/v1`, so no public URL has to be configured.
  */
 export function useRuntimeAppConfigs() {
-	const config = useRuntimeConfig();
+	const baseURL = useRuntimeConfig().app.baseURL.replace(/\/+$/, "");
 	return {
-		apiUrl: (config.public.apiUrl as string | undefined) ?? "",
-		appUrl: (config.public.appUrl as string | undefined) ?? "",
+		/** Base path without trailing slash (`/ui/v2/login`, or `""` at the root). */
+		baseURL,
+		apiURL: `${baseURL}/api/v1`,
 	} as const;
 }

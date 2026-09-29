@@ -80,7 +80,11 @@ export class SessionCookies {
 
 	static add(
 		ctx: LoginContext,
-		{ session, cleanup, iFrameEnabled }: { session: SessionCookie; cleanup?: boolean; iFrameEnabled?: boolean },
+		{
+			session,
+			cleanup,
+			iFrameEnabled,
+		}: { session: SessionCookie; cleanup?: boolean; iFrameEnabled?: boolean },
 	) {
 		let current = SessionCookies.read(ctx);
 
@@ -100,7 +104,11 @@ export class SessionCookies {
 			}
 		}
 
-		SessionCookies.write(ctx, cleanup ? current.filter((s) => isNotExpired(s)) : current, iFrameEnabled);
+		SessionCookies.write(
+			ctx,
+			cleanup ? current.filter((s) => isNotExpired(s)) : current,
+			iFrameEnabled,
+		);
 	}
 
 	static update(
@@ -120,17 +128,29 @@ export class SessionCookies {
 			throw new Error("updateSessionCookie: session id not found");
 		}
 		sessions[index] = session;
-		SessionCookies.write(ctx, cleanup ? sessions.filter((s) => isNotExpired(s)) : sessions, iFrameEnabled);
+		SessionCookies.write(
+			ctx,
+			cleanup ? sessions.filter((s) => isNotExpired(s)) : sessions,
+			iFrameEnabled,
+		);
 	}
 
 	static remove(
 		ctx: LoginContext,
-		{ session, cleanup, iFrameEnabled }: { session: SessionCookie; cleanup?: boolean; iFrameEnabled?: boolean },
+		{
+			session,
+			cleanup,
+			iFrameEnabled,
+		}: { session: SessionCookie; cleanup?: boolean; iFrameEnabled?: boolean },
 	) {
 		const hasCookie = !!ctx.getCookie(SESSIONS_COOKIE);
 		const sessions = hasCookie ? SessionCookies.read(ctx) : [session];
 		const reduced = sessions.filter((s) => s.id !== session.id);
-		SessionCookies.write(ctx, cleanup ? reduced.filter((s) => isNotExpired(s)) : reduced, iFrameEnabled);
+		SessionCookies.write(
+			ctx,
+			cleanup ? reduced.filter((s) => isNotExpired(s)) : reduced,
+			iFrameEnabled,
+		);
 	}
 
 	static getMostRecent(ctx: LoginContext): SessionCookie | undefined {
@@ -152,7 +172,9 @@ export class SessionCookies {
 		{ loginName, organization }: { loginName?: string; organization?: string },
 	): SessionCookie | undefined {
 		return SessionCookies.read(ctx).find((s) =>
-			organization ? s.organization === organization && s.loginName === loginName : s.loginName === loginName,
+			organization
+				? s.organization === organization && s.loginName === loginName
+				: s.loginName === loginName,
 		);
 	}
 

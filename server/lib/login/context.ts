@@ -12,8 +12,8 @@ import type { Context } from "hono";
 import { getCookie, setCookie } from "hono/cookie";
 import type { CookieOptions } from "hono/utils/cookie";
 import { I18n } from "../i18n";
-import { AppConstants } from "../utils/constants";
 import { ConfigHandler } from "../utils/config";
+import { AppConstants } from "../utils/constants";
 import type { ServiceConfig, Translate } from "../zitadel/api";
 
 function stripProtocol(url: string) {
@@ -22,6 +22,17 @@ function stripProtocol(url: string) {
 
 export class LoginContext {
 	private static basePath: string = AppConstants.DEFAULT_BASE_PATH;
+	private static readonly byRequest = new WeakMap<Context, LoginContext>();
+
+	/** The context of a Hono request (one per request, so cookie writes are shared). */
+	static from(c: Context): LoginContext {
+		let ctx = LoginContext.byRequest.get(c);
+		if (!ctx) {
+			ctx = new LoginContext(c);
+			LoginContext.byRequest.set(c, ctx);
+		}
+		return ctx;
+	}
 
 	/** Base path the login is served under (`NUXT_APP_BASE_URL`), without trailing slash. */
 	static configure({ basePath }: { basePath: string }) {
@@ -30,6 +41,13 @@ export class LoginContext {
 
 	static getBasePath() {
 		return LoginContext.basePath;
+	}
+
+	/** A request pathname relative to the base path (`/ui/v2/login/login` → `/login`). */
+	static stripBasePath(pathname: string): string {
+		const base = LoginContext.basePath;
+		if (!base || pathname === base) return base ? "/" : pathname;
+		return pathname.startsWith(`${base}/`) ? pathname.slice(base.length) : pathname;
 	}
 
 	/**
@@ -134,7 +152,9 @@ export class LoginContext {
 
 	/** Organization for custom texts: the `x-zitadel-i18n-organization` header or `?organization=`. */
 	i18nOrganization(): string | undefined {
-		return this.header("x-zitadel-i18n-organization") || this.c.req.query("organization") || undefined;
+		return (
+			this.header("x-zitadel-i18n-organization") || this.c.req.query("organization") || undefined
+		);
 	}
 
 	i18n(): Promise<I18n.Resolved> {

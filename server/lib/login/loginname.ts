@@ -32,7 +32,12 @@ const ORG_SUFFIX_REGEX = /(?<=@)(.+)/;
 
 export class LoginName {
 	/** Absolute IdP callback URL (`/idp/<slug>/process|failure?…`) on the public host. */
-	static idpCallbackUrl(ctx: LoginContext, provider: string, kind: "process" | "failure", params: URLSearchParams) {
+	static idpCallbackUrl(
+		ctx: LoginContext,
+		provider: string,
+		kind: "process" | "failure",
+		params: URLSearchParams,
+	) {
 		const host = ctx.publicHost();
 		return `${host.includes("localhost") ? "http://" : "https://"}${host}${LoginContext.getBasePath()}/idp/${provider}/${kind}?${new URLSearchParams(params)}`;
 	}
@@ -94,7 +99,9 @@ export class LoginName {
 		};
 
 		// With an org domain suffix the user types only the local part.
-		const concatLoginname = command.suffix ? `${command.loginName}@${command.suffix}` : command.loginName;
+		const concatLoginname = command.suffix
+			? `${command.loginName}@${command.suffix}`
+			: command.loginName;
 
 		const startIdpFlow = async (
 			idpId: string,
@@ -112,7 +119,7 @@ export class LoginName {
 				},
 			});
 
-			if (!response || !response.url) {
+			if (!response?.url) {
 				return { error: t("errors.couldNotStartIDPFlow") };
 			}
 			if (response.fields) {
@@ -140,7 +147,9 @@ export class LoginName {
 			if (identityProviders.length === 0) {
 				const activeIdps = (
 					await ZitadelAPI.getActiveIdentityProviders({ serviceConfig, orgId: organization })
-				).identityProviders.filter((idp) => idp.options?.isAutoCreation || idp.options?.isCreationAllowed);
+				).identityProviders.filter(
+					(idp) => idp.options?.isAutoCreation || idp.options?.isCreationAllowed,
+				);
 
 				if (activeIdps.length === 1 && activeIdps[0]) {
 					const provider = IdpTypes.toSlug(activeIdps[0].type);
@@ -186,18 +195,26 @@ export class LoginName {
 					return preventUserEnumeration(command.organization);
 				}
 			} else if (userLoginSettings?.disableLoginWithEmail) {
-				if (user.preferredLoginName !== concatLoginname && humanUser?.phone?.phone !== command.loginName) {
+				if (
+					user.preferredLoginName !== concatLoginname &&
+					humanUser?.phone?.phone !== command.loginName
+				) {
 					return preventUserEnumeration(command.organization);
 				}
 			} else if (userLoginSettings?.disableLoginWithPhone) {
-				if (user.preferredLoginName !== concatLoginname && humanUser?.email?.email !== command.loginName) {
+				if (
+					user.preferredLoginName !== concatLoginname &&
+					humanUser?.email?.email !== command.loginName
+				) {
 					return preventUserEnumeration(command.organization);
 				}
 			}
 
 			// With protection on, no session (and no cookie) is created, so known and unknown users
 			// stay indistinguishable for the /password page too.
-			let session: Awaited<ReturnType<typeof LoginSessionCookie.createSessionAndUpdateCookie>>["session"] | undefined;
+			let session:
+				| Awaited<ReturnType<typeof LoginSessionCookie.createSessionAndUpdateCookie>>["session"]
+				| undefined;
 			if (!ignoreUnknownUsernames) {
 				try {
 					const result = await LoginSessionCookie.createSessionAndUpdateCookie(ctx, {
@@ -386,7 +403,10 @@ export class LoginName {
 			const orgToCheck = orgs.result && orgs.result.length === 1 ? orgs.result[0]?.id : undefined;
 
 			if (orgToCheck) {
-				const orgLoginSettings = await ZitadelAPI.getLoginSettings({ serviceConfig, organization: orgToCheck });
+				const orgLoginSettings = await ZitadelAPI.getLoginSettings({
+					serviceConfig,
+					organization: orgToCheck,
+				});
 				if (orgLoginSettings?.allowDomainDiscovery) {
 					discoveredOrganization = orgToCheck;
 					effectiveLoginSettings = orgLoginSettings;

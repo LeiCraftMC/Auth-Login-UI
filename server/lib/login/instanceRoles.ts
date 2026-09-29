@@ -2,7 +2,7 @@
  * Instance role sync for ZITADEL IdPs with `instanceRolesInfo` (e.g. support access) — port of the
  * Zitadel login's `lib/server/instance-roles.ts`.
  */
-import { ConnectError, Code } from "@connectrpc/connect";
+import { Code, ConnectError } from "@connectrpc/connect";
 import { Logger } from "../utils/logger";
 import { type ServiceConfig, ZitadelAPI } from "../zitadel/api";
 import type { InstanceRolesInfo } from "../zitadel/proto/zitadel/idp/v2/idp_pb";
@@ -32,7 +32,9 @@ export class InstanceRoles {
 			const granted = Object.entries(orgs as Record<string, unknown>).some(
 				([orgId, orgDomain]) =>
 					typeof orgDomain === "string" &&
-					rolesInfo.some((info) => info.organizationId === orgId && info.organizationDomain === orgDomain),
+					rolesInfo.some(
+						(info) => info.organizationId === orgId && info.organizationDomain === orgDomain,
+					),
 			);
 			if (granted) roles.push(role);
 		}
@@ -70,11 +72,16 @@ export class InstanceRoles {
 			// never escalate to instance roles).
 			const instanceId = await ZitadelAPI.getInstanceId({ serviceConfig });
 			if (!instanceId || idp?.details?.resourceOwner !== instanceId) {
-				Logger.warn("Instance role sync skipped: IdP with instanceRolesInfo is not instance-scoped", { idpId });
+				Logger.warn("Instance role sync skipped: IdP with instanceRolesInfo is not instance-scoped", {
+					idpId,
+				});
 				return;
 			}
 
-			const grantedRoles = InstanceRoles.instanceRolesFromClaim(intent.idpInformation?.rawInformation, rolesInfo);
+			const grantedRoles = InstanceRoles.instanceRolesFromClaim(
+				intent.idpInformation?.rawInformation,
+				rolesInfo,
+			);
 			if (!grantedRoles.length) return;
 			attemptedRoles = grantedRoles;
 
@@ -91,8 +98,15 @@ export class InstanceRoles {
 			const existing = administrators?.find((a) => a.resource?.case === "instance");
 
 			if (!existing) {
-				await permissions.createAdministrator({ userId, resource: instanceResource, roles: grantedRoles });
-				Logger.info("Added instance administrator from ZITADEL IdP roles", { userId, roles: grantedRoles });
+				await permissions.createAdministrator({
+					userId,
+					resource: instanceResource,
+					roles: grantedRoles,
+				});
+				Logger.info("Added instance administrator from ZITADEL IdP roles", {
+					userId,
+					roles: grantedRoles,
+				});
 				return;
 			}
 

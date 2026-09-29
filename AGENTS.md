@@ -1,7 +1,8 @@
 # AGENTS.md — operating manual for AI coding agents
 
-You are working in a LeiCraftMC full-stack Nuxt app (Nuxt frontend + Hono backend in `server/`).
-Follow the LeiCraftMC Style Guides: https://github.com/LeiCraftMC/Style-Guides.
+You are working in the LeiCraftMC Auth Login UI: a LeiCraftMC full-stack Nuxt app (Nuxt frontend +
+Hono backend in `server/`) that replaces the Zitadel Login V2 (`zitadel/apps/login`, ported from
+tag v4.19.2). Follow the LeiCraftMC Style Guides: https://github.com/LeiCraftMC/Style-Guides.
 
 ## Must read
 
@@ -11,25 +12,40 @@ Follow the LeiCraftMC Style Guides: https://github.com/LeiCraftMC/Style-Guides.
 - [docs/05-api-contract.md](https://github.com/LeiCraftMC/Style-Guides/blob/main/docs/05-api-contract.md)
 - [docs/06-frontend-nuxt.md](https://github.com/LeiCraftMC/Style-Guides/blob/main/docs/06-frontend-nuxt.md)
 - [docs/07-state-and-data.md](https://github.com/LeiCraftMC/Style-Guides/blob/main/docs/07-state-and-data.md)
+- `README.md` — setup, structure and the differences to the Zitadel login
 
 ## Non-negotiable
 
-- Nuxt 4 `app/` srcDir; Tailwind v4 CSS-first; no `tailwind.config.js`. Dark-only (no toggle).
-- The Hono backend lives in `server/` and owns `/api` — no `Bun.serve`, no `Main.main()`; init in
-  `server/plugins/startup.ts`.
-- Every API response uses the `{ success, code, message, data }` envelope via `APIResponse.*`
-  (errors omit `data`).
-- Validate with `hono-openapi`'s validator (`import { validator as zValidator } from "hono-openapi"`); routes in `server/lib/api/versions/v<n>/routes/<resource>/{index.ts, model.ts}`.
-- Auth uses opaque bearer tokens (`<prefix>_<kind>_<id>:<base>`, `Bun.password`-hashed) — not JWT.
-  See docs/10-auth.md.
-- Frontend API access only through `useAPI`; global state via `AbstractStore` over `useState`;
-  component-local form/UI state with `reactive()`/`ref()` is fine.
-- Lucide icons only (`i-lucide-*`). Never hand-edit `*.gen.ts` under `app/api-client/` —
-  regenerate with `bun run api-client:generate`.
-- `nitro.rollupConfig.external: ["bun:sqlite"]` in `nuxt.config.ts`. WebSocket routes
-  (`server/routes/ws/`) require `nitro.experimental.websocket = true` (Bun preset).
+- **Parity with the Zitadel login first**: page paths, query parameters, cookie names/formats
+  (`sessions` with its HMAC signature, `NEXT_LOCALE`, `fingerprintId`), i18n keys and flow
+  behaviour follow `zitadel/apps/login` v4.19.2. Check the upstream source before changing a flow and
+  record intentional differences in the README.
+- Zitadel is only reached as the **system API user** (`server/lib/zitadel/systemToken.ts`); the
+  instance comes from the request host (`LoginContext.getServiceConfig`). No PAT / login client key.
+- Nuxt 4 `app/` srcDir; Tailwind v4 CSS-first; dark-only. Pages are client-rendered (`ssr: false`)
+  and served under `app.baseURL` (`/ui/v2/login/`, `NUXT_APP_BASE_URL`).
+- The Hono API lives in `server/` and owns `<base>/api`; protocol routes (`/login`, `/healthy`,
+  `/ready`, Zitadel proxy paths) are in `server/lib/protocol/`, dispatched by
+  `server/middleware/protocol.ts`. Init in `server/plugins/startup.ts`.
+- Every API response uses the `{ success, code, message, data }` envelope via `APIResponse.*`;
+  login steps return `LoginModels.FlowStep` (`{ redirect?, samlData? }`) via `LoginResponses.flow`.
+- Validate with `hono-openapi`'s validator (`import { validator as zValidator } from "hono-openapi"`);
+  routes in `server/lib/api/versions/v<n>/routes/<resource>/{index.ts, model.ts}`.
+- Frontend: API access only through `useAPI`; page data via `useLoginPage`, login steps via
+  `useLoginFlow` (never navigate to a step result yourself); texts via `useTranslations(namespace)`;
+  global state via `AbstractStore`. Every page renders one `<LoginCard>`.
+- Lucide icons only (`i-lucide-*`); brand marks of IdPs are images in `components/img/`. Icons
+  render as inline SVG (`icon.mode: "svg"`) because the Zitadel login CSP blocks `data:` images.
+- Never hand-edit `app/api-client/*.gen.ts` (`bun run api-client:generate`) or
+  `server/lib/zitadel/proto/**` (`bun run proto:generate`).
 - Format with Biome before finishing. Conventional Commits.
 
-Replace `<ProjectName>`, the `APPPREFIX` env prefix / `appprefix` token prefix
-(`server/lib/utils/constants.ts`) and the `<PREFIX>` session-cookie name
-(`app/composables/useAppCookies.ts`) with the real project values.
+## Divergences from the fullstack template
+
+- No database, email, cron or task queue; no bearer-token auth (the login state is the signed
+  `sessions` cookie). Mutating API calls pass an `Origin` check instead (`API.isAllowedOrigin`).
+- Generated client uses `@hey-api/client-fetch` (like LAVIAC): client-nuxt's generated code fails
+  vue-tsc on Windows/Bun. `useAPI` unwraps `{ data, error }` to the envelope.
+- `@unhead/*` is pinned to 3.4.0 via `overrides` (3.4.1 ships an unparsable `.d.ts`).
+- Protos are generated in-process (`scripts/proto-generate.ts`: protobufjs → descriptors →
+  protoc-gen-es) because the `buf` binary cannot be executed on the development machines.

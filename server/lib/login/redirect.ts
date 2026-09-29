@@ -1,6 +1,6 @@
 /**
  * Redirect validation (Zitadel login: `isSafeRedirectUri` / `isExternalUrl` in
- * `lib/client-utils.ts`). The same checks run in the browser (`app/utils/redirect.ts`).
+ * `lib/client-utils.ts`). The same checks run in the browser (`app/utils/url.ts`).
  */
 import { sanitizeUrl } from "@braintree/sanitize-url";
 

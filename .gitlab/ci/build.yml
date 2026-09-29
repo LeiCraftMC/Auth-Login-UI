@@ -1,13 +1,11 @@
-# .gitlab/ci/build.yml — build stage: Nuxt + API bundle → Docker image.
-# `bun run build` produces .output/ (Bun preset); docker/Dockerfile runs it on oven/bun together
-# with drizzle/migrations.
-# Runs on the default branch only and pushes $CI_REGISTRY_IMAGE:latest.
 
 build-and-push:
   stage: build
   variables:
     BUN_INSTALL_CACHE_DIR: .bun/install/cache
     NUXT_TELEMETRY_DISABLED: "1"
+    BUILDX_NO_DEFAULT_ATTESTATIONS: "1"
+
   cache:
     key:
       files:
@@ -16,13 +14,18 @@ build-and-push:
       - .bun/install/cache/
       - node_modules/
 
+  tags:
+    - glar-linux-medium-amd64
+
   before_script:
-    # Dependencies (including devDependencies — the build step needs them)
+  
+    # Install Bun and dependencies
     - apt-get update
     - apt-get install -y ca-certificates curl gnupg
-    - bun install --frozen-lockfile
+    - bun install --frozen-lockfile --production
 
     # Docker install
+
     - install -m 0755 -d /etc/apt/keyrings
     - curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
     - chmod a+r /etc/apt/keyrings/docker.gpg
@@ -34,13 +37,18 @@ build-and-push:
     - sleep 5
     - docker info || { cat /tmp/dockerd.log; exit 1; }
 
-    # Authenticate with the registry
+    # Authenticate with Registry
+
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY -u $CI_REGISTRY_USER --password-stdin
 
   script:
+
+    # Build the nuxt app and docker image, then push to the registry
     - bun run build
+
     - docker build -f docker/Dockerfile -t "$CI_REGISTRY_IMAGE:latest" .
     - docker push "$CI_REGISTRY_IMAGE:latest"
 
   rules:
     - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+

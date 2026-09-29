@@ -30,7 +30,9 @@ export class ZitadelSystemToken {
 
 	private static async getKey(): Promise<CryptoKey> {
 		if (ZitadelSystemToken.cachedKey) return ZitadelSystemToken.cachedKey;
-		const pem = ZitadelSystemToken.normalizePrivateKeyPem(ConfigHandler.resolveSystemUserPrivateKey());
+		const pem = ZitadelSystemToken.normalizePrivateKeyPem(
+			ConfigHandler.resolveSystemUserPrivateKey(),
+		);
 		ZitadelSystemToken.cachedKey = await importPKCS8(pem, "RS256");
 		return ZitadelSystemToken.cachedKey;
 	}

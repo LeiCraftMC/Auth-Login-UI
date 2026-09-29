@@ -16,3 +16,6 @@ export function isFlowResult(value: unknown): value is FlowResult {
 			("samlData" in value && !!(value as any).samlData))
 	);
 }
+
+/** Placeholder user id used instead of a real one while enumeration protection applies. */
+export const UNKNOWN_USER_ID = "000000000000000000";

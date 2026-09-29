@@ -19,7 +19,12 @@ import type { FlowResult } from "./types";
 
 export class LoginVerify {
 	/** Confirms a TOTP registration with the first code (needs an authorized session). */
-	static async verifyTOTP(ctx: LoginContext, code: string, loginName?: string, organization?: string) {
+	static async verifyTOTP(
+		ctx: LoginContext,
+		code: string,
+		loginName?: string,
+		organization?: string,
+	) {
 		const session = await LoginSessions.loadMostRecent(ctx, { loginName, organization });
 
 		if (!session?.factors?.user?.id) {
@@ -65,11 +70,17 @@ export class LoginVerify {
 					verificationCode: command.code,
 				});
 			} else {
-				await ZitadelAPI.verifyEmail({ serviceConfig, userId: command.userId, verificationCode: command.code });
+				await ZitadelAPI.verifyEmail({
+					serviceConfig,
+					userId: command.userId,
+					verificationCode: command.code,
+				});
 			}
 		} catch (error) {
 			Logger.warn(command.isInvite ? "Could not verify invite:" : "Could not verify email:", error);
-			return { error: t(command.isInvite ? "errors.couldNotVerifyInvite" : "errors.couldNotVerifyEmail") };
+			return {
+				error: t(command.isInvite ? "errors.couldNotVerifyInvite" : "errors.couldNotVerifyEmail"),
+			};
 		}
 
 		const userResponse = await ZitadelAPI.getUserByID({ serviceConfig, userId: command.userId });
@@ -199,11 +210,19 @@ export class LoginVerify {
 		command: { userId: string; isInvite: boolean; requestId?: string },
 	): Promise<{ error?: string }> {
 		const t = await ctx.t("verify");
-		const urlTemplate = LoginVerify.buildVerificationUrlTemplate(ctx, command.isInvite, command.requestId);
+		const urlTemplate = LoginVerify.buildVerificationUrlTemplate(
+			ctx,
+			command.isInvite,
+			command.requestId,
+		);
 
 		if (command.isInvite) {
 			try {
-				await ZitadelAPI.createInviteCode({ serviceConfig: ctx.serviceConfig, userId: command.userId, urlTemplate });
+				await ZitadelAPI.createInviteCode({
+					serviceConfig: ctx.serviceConfig,
+					userId: command.userId,
+					urlTemplate,
+				});
 				return {};
 			} catch (error: any) {
 				if (error?.code === 9) return { error: t("errors.userAlreadyVerified") };
@@ -211,7 +230,11 @@ export class LoginVerify {
 			}
 		}
 
-		await ZitadelAPI.sendEmailCode({ serviceConfig: ctx.serviceConfig, userId: command.userId, urlTemplate });
+		await ZitadelAPI.sendEmailCode({
+			serviceConfig: ctx.serviceConfig,
+			userId: command.userId,
+			urlTemplate,
+		});
 		return {};
 	}
 
@@ -221,12 +244,24 @@ export class LoginVerify {
 		command: { userId: string; isInvite: boolean; requestId?: string },
 	): Promise<boolean> {
 		try {
-			const urlTemplate = LoginVerify.buildVerificationUrlTemplate(ctx, command.isInvite, command.requestId);
+			const urlTemplate = LoginVerify.buildVerificationUrlTemplate(
+				ctx,
+				command.isInvite,
+				command.requestId,
+			);
 
 			if (command.isInvite) {
-				await ZitadelAPI.createInviteCode({ serviceConfig: ctx.serviceConfig, userId: command.userId, urlTemplate });
+				await ZitadelAPI.createInviteCode({
+					serviceConfig: ctx.serviceConfig,
+					userId: command.userId,
+					urlTemplate,
+				});
 			} else {
-				await ZitadelAPI.sendEmailCode({ serviceConfig: ctx.serviceConfig, userId: command.userId, urlTemplate });
+				await ZitadelAPI.sendEmailCode({
+					serviceConfig: ctx.serviceConfig,
+					userId: command.userId,
+					urlTemplate,
+				});
 			}
 
 			Logger.info("Verification email sent successfully", {

@@ -1,11 +1,10 @@
 /**
  * useAPI — the single gateway to the generated API SDK.
  *
- * On the server it applies the session cookie's token and calls the SDK; on the client it reads the session cookie,
- * applies it to the generated client via `updateAPIClient`, redirects to `/auth/login` on a missing
- * or 401 token, and always returns the backend's `{ success, code, message, data }` envelope
- * (errors are normalized into the envelope, never thrown). Callers branch on `result.success`.
- * See docs/07-state-and-data.md.
+ * Configures the client via `updateAPIClient` (same-origin, cookies, the page's organization for
+ * translated messages) and always returns the backend's `{ success, code, message, data }`
+ * envelope (errors are normalized into the envelope, never thrown). Callers branch on
+ * `result.success`. The login has no bearer token: its state lives in httpOnly cookies.
  */
 import * as baseAPIClient from "@/api-client/sdk.gen";
 
@@ -14,15 +13,22 @@ export namespace UseAPITypes {
 
 	export type DefaultReturn<TReturn> = TReturn;
 
-	export type UseAPIReturnType<TReturn> = Promise<
-		| TReturn
-		| {
-				readonly success: false;
-				readonly code: 500;
-				readonly message: string;
-				readonly data: null;
-		  }
-	>;
+	/** The `{ success, code, message, data }` envelope, discriminated on `success`. */
+	export type Envelope<TData> =
+		| { success: true; code: number; message: string; data: TData }
+		| { success: false; code: number; message: string; data: null };
+
+	/**
+	 * The envelope payload of a `@hey-api/client-fetch` result: it resolves to
+	 * `{ data?: <envelope>, error?: <envelope>, … }` and the envelope's `data` is the payload.
+	 */
+	export type EnvelopeData<W> = W extends { data: infer Env }
+		? Env extends { data: infer D }
+			? D
+			: never
+		: never;
+
+	export type UseAPIReturnType<TReturn> = Promise<Envelope<EnvelopeData<TReturn>>>;
 
 	export type AsyncDataReturn<TReturn> = {
 		data: Ref<DefaultReturn<TReturn>>;
@@ -135,40 +141,21 @@ class LazyAsyncDataRequestWrapper<TReturn> {
 	}
 }
 
+const unwrap = (raw: any): any => raw?.data ?? raw?.error ?? raw;
+
 export async function useAPI<TReturn>(
-	handler: (api: UseAPITypes.APIClient) => TReturn,
-	disableAuthRedirect = false,
+	handler: (api: UseAPITypes.APIClient) => Promise<TReturn>,
 ): UseAPITypes.UseAPIReturnType<TReturn> {
 	try {
-		if (import.meta.server) {
-			const sessionToken = useAppCookies().sessionToken.get().value;
-			updateAPIClient(sessionToken ?? null);
-			return await handler(baseAPIClient);
-		} else if (import.meta.client) {
-			const sessionToken = useAppCookies().sessionToken.get();
+		const organization = useRoute().query.organization;
+		updateAPIClient(typeof organization === "string" ? organization : undefined);
 
-			if (sessionToken.value) {
-				updateAPIClient(sessionToken.value);
-			} else {
-				updateAPIClient(null);
-				if (!disableAuthRedirect) {
-					await navigateTo(`/auth/login?url=${encodeURIComponent(useRoute().fullPath)}`);
-				}
-			}
-
-			const result = await handler(baseAPIClient);
-
-			if ((result as any)?.success === false && (result as any)?.code === 401) {
-				updateAPIClient(null);
-				sessionToken.value = null;
-				if (!disableAuthRedirect) {
-					await navigateTo(`/auth/login?url=${encodeURIComponent(useRoute().fullPath)}`);
-				}
-			}
-			return result;
-		} else {
-			throw new Error("Unknown environment");
+		const result = unwrap(await handler(baseAPIClient));
+		if (typeof result?.success !== "boolean") {
+			// not an envelope, e.g. a proxy error page
+			throw new Error("An unknown error occurred.");
 		}
+		return result;
 	} catch (error) {
 		return {
 			success: false,

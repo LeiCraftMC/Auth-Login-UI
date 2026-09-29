@@ -217,7 +217,8 @@ export class LoginPasskeys {
 			return { error: t("verify.errors.userNotFound") };
 		}
 
-		const humanUser = userResponse.user.type.case === "human" ? userResponse.user.type.value : undefined;
+		const humanUser =
+			userResponse.user.type.case === "human" ? userResponse.user.type.value : undefined;
 
 		const emailVerificationCheck = await VerifyHelper.checkEmailVerification(
 			ctx,

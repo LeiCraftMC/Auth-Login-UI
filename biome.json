@@ -26,7 +26,7 @@
 			"!**/.git",
 			"!**/*.gen.ts",
 			"!**/api-client",
-			"!**/drizzle/migrations"
+			"!**/server/lib/zitadel/proto"
 		]
 	},
 	"formatter": {

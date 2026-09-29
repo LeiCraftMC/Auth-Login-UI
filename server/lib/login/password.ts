@@ -38,7 +38,10 @@ export class LoginPassword {
 		failedAttempts: number,
 		orgId: string | undefined,
 	) {
-		const lockoutSettings = await ZitadelAPI.getLockoutSettings({ serviceConfig: ctx.serviceConfig, orgId });
+		const lockoutSettings = await ZitadelAPI.getLockoutSettings({
+			serviceConfig: ctx.serviceConfig,
+			orgId,
+		});
 		const maxAttempts = lockoutSettings?.maxPasswordAttempts;
 		const hasLimit = maxAttempts !== undefined && maxAttempts > BigInt(0);
 		const locked = hasLimit && BigInt(failedAttempts) >= (maxAttempts as bigint);
@@ -52,7 +55,12 @@ export class LoginPassword {
 
 	static async resetPassword(
 		ctx: LoginContext,
-		command: { loginName: string; organization?: string; defaultOrganization?: string; requestId?: string },
+		command: {
+			loginName: string;
+			organization?: string;
+			defaultOrganization?: string;
+			requestId?: string;
+		},
 	): Promise<{ error?: string }> {
 		const serviceConfig = ctx.serviceConfig;
 		const t = await ctx.t("password");
@@ -102,11 +110,17 @@ export class LoginPassword {
 		if (userLoginSettings?.disableLoginWithEmail && userLoginSettings?.disableLoginWithPhone) {
 			if (user.preferredLoginName !== command.loginName) return hideUnknown(userLoginSettings);
 		} else if (userLoginSettings?.disableLoginWithEmail) {
-			if (user.preferredLoginName !== command.loginName && humanUser?.phone?.phone !== command.loginName) {
+			if (
+				user.preferredLoginName !== command.loginName &&
+				humanUser?.phone?.phone !== command.loginName
+			) {
 				return hideUnknown(userLoginSettings);
 			}
 		} else if (userLoginSettings?.disableLoginWithPhone) {
-			if (user.preferredLoginName !== command.loginName && humanUser?.email?.email !== command.loginName) {
+			if (
+				user.preferredLoginName !== command.loginName &&
+				humanUser?.email?.email !== command.loginName
+			) {
 				return hideUnknown(userLoginSettings);
 			}
 		}
@@ -164,7 +178,7 @@ export class LoginPassword {
 				if (!loginSettingsByUser) throw new Error("Could not load login settings");
 
 				let lifetime = loginSettingsByUser.passwordCheckLifetime;
-				if (!lifetime || !lifetime.seconds) {
+				if (!lifetime?.seconds) {
 					Logger.warn("No password lifetime provided, defaulting to 24 hours");
 					lifetime = DEFAULT_LIFETIME;
 				}
@@ -231,11 +245,17 @@ export class LoginPassword {
 			if (userLoginSettings?.disableLoginWithEmail && userLoginSettings?.disableLoginWithPhone) {
 				if (user.preferredLoginName !== command.loginName) return mismatch();
 			} else if (userLoginSettings?.disableLoginWithEmail) {
-				if (user.preferredLoginName !== command.loginName && humanUser?.phone?.phone !== command.loginName) {
+				if (
+					user.preferredLoginName !== command.loginName &&
+					humanUser?.phone?.phone !== command.loginName
+				) {
 					return mismatch();
 				}
 			} else if (userLoginSettings?.disableLoginWithPhone) {
-				if (user.preferredLoginName !== command.loginName && humanUser?.email?.email !== command.loginName) {
+				if (
+					user.preferredLoginName !== command.loginName &&
+					humanUser?.email?.email !== command.loginName
+				) {
 					return mismatch();
 				}
 			}
@@ -280,7 +300,10 @@ export class LoginPassword {
 		}
 
 		if (!user) {
-			const userResponse = await ZitadelAPI.getUserByID({ serviceConfig, userId: session.factors.user.id });
+			const userResponse = await ZitadelAPI.getUserByID({
+				serviceConfig,
+				userId: session.factors.user.id,
+			});
 			if (!userResponse.user) {
 				return { error: t("errors.userNotFound") };
 			}
@@ -289,7 +312,8 @@ export class LoginPassword {
 
 		loginSettingsByUser ??= await ZitadelAPI.getLoginSettings({
 			serviceConfig,
-			organization: command.organization ?? session.factors?.user?.organizationId ?? command.defaultOrganization,
+			organization:
+				command.organization ?? session.factors?.user?.organizationId ?? command.defaultOrganization,
 		});
 
 		const humanUser = user.type.case === "human" ? user.type.value : undefined;
@@ -322,7 +346,9 @@ export class LoginPassword {
 		);
 		if (emailVerificationCheck?.redirect) return emailVerificationCheck;
 
-		let authMethods: Awaited<ReturnType<typeof ZitadelAPI.listAuthenticationMethodTypes>>["authMethodTypes"] | undefined;
+		let authMethods:
+			| Awaited<ReturnType<typeof ZitadelAPI.listAuthenticationMethodTypes>>["authMethodTypes"]
+			| undefined;
 		if (command.checks?.password && session.factors?.user?.id) {
 			const response = await ZitadelAPI.listAuthenticationMethodTypes({
 				serviceConfig,
@@ -401,7 +427,10 @@ export class LoginPassword {
 
 		// without a code, only users without any auth method and a valid verification may set one
 		if (!command.code) {
-			const authMethods = await ZitadelAPI.listAuthenticationMethodTypes({ serviceConfig, userId: user.userId });
+			const authMethods = await ZitadelAPI.listAuthenticationMethodTypes({
+				serviceConfig,
+				userId: user.userId,
+			});
 			if (authMethods.authMethodTypes.length !== 0) {
 				return { error: t("errors.codeOrVerificationRequired") };
 			}
@@ -425,7 +454,11 @@ export class LoginPassword {
 	/** Changes the password of a session's user after re-checking the current password. */
 	static async checkSessionAndSetPassword(
 		ctx: LoginContext,
-		{ sessionId, currentPassword, password }: { sessionId: string; currentPassword: string; password: string },
+		{
+			sessionId,
+			currentPassword,
+			password,
+		}: { sessionId: string; currentPassword: string; password: string },
 	): Promise<{ error?: string }> {
 		const serviceConfig = ctx.serviceConfig;
 		const t = await ctx.t("password");
@@ -458,7 +491,7 @@ export class LoginPassword {
 		});
 
 		let lifetime = loginSettings?.passwordCheckLifetime;
-		if (!lifetime || !lifetime.seconds) lifetime = DEFAULT_LIFETIME;
+		if (!lifetime?.seconds) lifetime = DEFAULT_LIFETIME;
 
 		try {
 			await LoginSessionCookie.setSessionAndUpdateCookie(ctx, {

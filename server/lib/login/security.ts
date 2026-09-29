@@ -35,7 +35,10 @@ export class LoginSecurity {
 			sanitized.otpEmail = {
 				...sanitized.otpEmail,
 				// fall back to the default Zitadel verification url
-				deliveryType: { case: "sendCode", value: create(RequestChallenges_OTPEmail_SendCodeSchema, {}) },
+				deliveryType: {
+					case: "sendCode",
+					value: create(RequestChallenges_OTPEmail_SendCodeSchema, {}),
+				},
 			};
 		}
 

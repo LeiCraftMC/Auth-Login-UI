@@ -1,50 +1,40 @@
-import { defineNitroPlugin } from "nitropack/runtime";
+import { defineNitroPlugin, useRuntimeConfig } from "nitropack/runtime";
 import { API } from "../lib/api";
-import { EmailService } from "../lib/api/utils/email";
-import { DB } from "../lib/db";
-import { TaskScheduler } from "../lib/tasks";
-import { Utils } from "../lib/utils";
+import { LoginContext } from "../lib/login/context";
+import { SessionCookieSignature } from "../lib/login/sessionCookieSignature";
+import { ProtocolRoutes } from "../lib/protocol";
 import { ConfigHandler } from "../lib/utils/config";
 import { AppConstants } from "../lib/utils/constants";
-import { CronJobHandler } from "../lib/utils/cron";
 import { Logger } from "../lib/utils/logger";
+import { ZitadelSystemToken } from "../lib/zitadel/systemToken";
 
 // Runs once at Nitro boot — replaces Main.main() from the standalone backend shape.
 export default defineNitroPlugin(async (nitroApp) => {
 	const config = await ConfigHandler.loadConfig();
 
 	Logger.setLogLevel(config.LOG_LEVEL ?? "info");
-	Logger.log(`Starting ${AppConstants.APP_NAME}...`);
+	Logger.log(`Starting ${AppConstants.APP_NAME} (Zitadel login ${AppConstants.ZITADEL_VERSION})...`);
 
-	await DB.init(config.DB_PATH, config.DB_AUTO_MIGRATE, config.CONFIG_BASE_DIR);
+	LoginContext.configure({ basePath: useRuntimeConfig().app.baseURL });
 
-	await Utils.ensureDirectoryExists(config.LOG_DIR ?? "./data/logs");
+	// Surface a broken system-user key at boot instead of on the first login attempt.
+	try {
+		await ZitadelSystemToken.get();
+	} catch (error) {
+		Logger.error("Could not create the Zitadel system-user token:", error);
+	}
 
-	await TaskScheduler.processQueue();
+	const cookieNotice = SessionCookieSignature.getStartupNotice();
+	if (cookieNotice) {
+		Logger[cookieNotice.level](cookieNotice.message);
+	}
 
-	await EmailService.init();
+	await API.init(config.ALLOWED_ORIGINS ?? [], config.API_DISABLE_DOCS === true);
+	ProtocolRoutes.init();
 
-	await CronJobHandler.init();
-	await CronJobHandler.startAll();
-
-	await API.init([config.APP_URL], config.API_DISABLE_DOCS === true);
+	Logger.log(`${AppConstants.APP_NAME} is serving ${LoginContext.getBasePath() || "/"}`);
 
 	nitroApp.hooks.hook("close", async () => {
-		try {
-			Logger.log(`Received SIGTERM, shutting down...`);
-
-			await CronJobHandler.stopAll();
-
-			await API.stop();
-
-			await EmailService.reset();
-			await TaskScheduler.stopProcessing();
-
-			await DB.close();
-
-			Logger.log("Shutdown complete, exiting.");
-		} catch {
-			Logger.critical("Error during shutdown, forcing exit");
-		}
+		Logger.log("Received SIGTERM, shutting down...");
 	});
 });

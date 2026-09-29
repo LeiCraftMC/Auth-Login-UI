@@ -50,7 +50,12 @@ export class LoginU2F {
 
 	static async verifyU2F(
 		ctx: LoginContext,
-		command: { u2fId: string; passkeyName?: string; publicKeyCredential: JsonObject; sessionId: string },
+		command: {
+			u2fId: string;
+			passkeyName?: string;
+			publicKeyCredential: JsonObject;
+			sessionId: string;
+		},
 	) {
 		const tokenName = command.passkeyName || LoginUserAgent.authenticatorName(ctx);
 

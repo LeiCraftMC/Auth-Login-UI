@@ -1,3 +1,7 @@
+<script setup lang="ts">
+const { baseURL } = useRuntimeAppConfigs();
+</script>
+
 <template>
-	<img src="/static/logo/icon.svg" alt="ProjectName" />
+	<img :src="`${baseURL}/static/logo/icon.svg`" alt="LeiCraftMC" />
 </template>

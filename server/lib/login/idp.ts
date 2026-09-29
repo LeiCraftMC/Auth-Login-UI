@@ -48,7 +48,8 @@ export class LoginIdp {
 		}
 		if (command.requestId) params.set("requestId", command.requestId);
 		if (command.organization) params.set("organization", command.organization);
-		if (command.postErrorRedirectUrl) params.set("postErrorRedirectUrl", command.postErrorRedirectUrl);
+		if (command.postErrorRedirectUrl)
+			params.set("postErrorRedirectUrl", command.postErrorRedirectUrl);
 
 		// LDAP asks for username and password on its own page
 		if (command.provider === "ldap") {
@@ -66,7 +67,7 @@ export class LoginIdp {
 			},
 		});
 
-		if (!response || !response.url) return { error: "Could not start IDP flow" };
+		if (!response?.url) return { error: "Could not start IDP flow" };
 		if (response.fields) return { samlData: { url: response.url, fields: response.fields } };
 		return { redirect: response.url };
 	}
@@ -104,7 +105,8 @@ export class LoginIdp {
 
 		if (!session?.factors?.user) return { error: "Could not create session" };
 
-		const humanUser = userResponse.user.type.case === "human" ? userResponse.user.type.value : undefined;
+		const humanUser =
+			userResponse.user.type.case === "human" ? userResponse.user.type.value : undefined;
 
 		const emailVerificationCheck = await VerifyHelper.checkEmailVerification(
 			ctx,
@@ -115,7 +117,9 @@ export class LoginIdp {
 		);
 		if (emailVerificationCheck?.redirect) return emailVerificationCheck;
 
-		let authMethods: Awaited<ReturnType<typeof ZitadelAPI.listAuthenticationMethodTypes>>["authMethodTypes"] | undefined;
+		let authMethods:
+			| Awaited<ReturnType<typeof ZitadelAPI.listAuthenticationMethodTypes>>["authMethodTypes"]
+			| undefined;
 		if (session.factors.user.id) {
 			const response = await ZitadelAPI.listAuthenticationMethodTypes({
 				serviceConfig,
@@ -137,8 +141,15 @@ export class LoginIdp {
 		return LoginFlow.completeFlowOrGetUrl(
 			ctx,
 			command.requestId && session.id
-				? { sessionId: session.id, requestId: command.requestId, organization: session.factors.user.organizationId }
-				: { loginName: session.factors.user.loginName, organization: session.factors.user.organizationId },
+				? {
+						sessionId: session.id,
+						requestId: command.requestId,
+						organization: session.factors.user.organizationId,
+					}
+				: {
+						loginName: session.factors.user.loginName,
+						organization: session.factors.user.organizationId,
+					},
 			loginSettings?.defaultRedirectUri,
 		);
 	}
@@ -169,7 +180,7 @@ export class LoginIdp {
 			password: command.password,
 		});
 
-		if (!response || response.nextStep.case !== "idpIntent" || !response.nextStep.value) {
+		if (response?.nextStep.case !== "idpIntent" || !response.nextStep.value) {
 			return { error: "Could not start LDAP identity provider flow" };
 		}
 
@@ -179,7 +190,8 @@ export class LoginIdp {
 		if (command.link) params.set("link", "true");
 		if (command.requestId) params.set("requestId", command.requestId);
 		if (command.organization) params.set("organization", command.organization);
-		if (command.postErrorRedirectUrl) params.set("postErrorRedirectUrl", command.postErrorRedirectUrl);
+		if (command.postErrorRedirectUrl)
+			params.set("postErrorRedirectUrl", command.postErrorRedirectUrl);
 		if (command.linkToSessionId) params.set("linkToSessionId", command.linkToSessionId);
 		if (command.linkFingerprint) params.set("linkFingerprint", command.linkFingerprint);
 

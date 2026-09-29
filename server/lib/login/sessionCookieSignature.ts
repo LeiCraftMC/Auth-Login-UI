@@ -41,7 +41,9 @@ export class SessionCookieSignature {
 	}
 
 	private static getCredentialSecrets(): string[] {
-		const credential = ConfigHandler.getConfig() ? ConfigHandler.resolveCredentialSecret() : undefined;
+		const credential = ConfigHandler.getConfig()
+			? ConfigHandler.resolveCredentialSecret()
+			: undefined;
 		return credential ? [credential] : [];
 	}
 
@@ -172,7 +174,12 @@ export class SessionCookieSignature {
 		// Check every secret (no early return) so timing doesn't reveal which one matches.
 		let valid = false;
 		for (const secret of SessionCookieSignature.getSecrets()) {
-			if (SessionCookieSignature.signaturesEqual(sig, SessionCookieSignature.computeSignature(unsigned, secret))) {
+			if (
+				SessionCookieSignature.signaturesEqual(
+					sig,
+					SessionCookieSignature.computeSignature(unsigned, secret),
+				)
+			) {
 				valid = true;
 			}
 		}

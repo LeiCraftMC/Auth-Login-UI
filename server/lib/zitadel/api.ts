@@ -7,11 +7,11 @@
  */
 import { create } from "@bufbuild/protobuf";
 import type { Duration } from "@bufbuild/protobuf/wkt";
+import { Code } from "@connectrpc/connect";
 import { ConfigHandler } from "../utils/config";
 import { Logger } from "../utils/logger";
 import { PromiseCache } from "./cache";
 import { type ServiceConfig, type WithServiceConfig, ZitadelClient } from "./client";
-import { Code } from "@connectrpc/connect";
 import { isClassifiedError } from "./errors";
 import { IdentityProviderService } from "./proto/zitadel/idp/v2/idp_service_pb";
 import { InternalPermissionService } from "./proto/zitadel/internal_permission/v2/internal_permission_service_pb";
@@ -20,10 +20,7 @@ import {
 	RequestContextSchema,
 	TextQueryMethod,
 } from "./proto/zitadel/object/v2/object_pb";
-import {
-	type CreateCallbackRequest,
-	OIDCService,
-} from "./proto/zitadel/oidc/v2/oidc_service_pb";
+import { type CreateCallbackRequest, OIDCService } from "./proto/zitadel/oidc/v2/oidc_service_pb";
 import type { Organization } from "./proto/zitadel/org/v2/org_pb";
 import { OrganizationService } from "./proto/zitadel/org/v2/org_service_pb";
 import { type CreateResponseRequest, SAMLService } from "./proto/zitadel/saml/v2/saml_service_pb";
@@ -33,7 +30,7 @@ import { type Checks, SessionService } from "./proto/zitadel/session/v2/session_
 import type { LoginSettings } from "./proto/zitadel/settings/v2/login_settings_pb";
 import { SettingsService } from "./proto/zitadel/settings/v2/settings_service_pb";
 import { SendEmailVerificationCodeSchema } from "./proto/zitadel/user/v2/email_pb";
-import type { FormData, RedirectURLs } from "./proto/zitadel/user/v2/idp_pb";
+import { type FormData, RedirectURLsSchema } from "./proto/zitadel/user/v2/idp_pb";
 import { NotificationType, SendPasswordResetLinkSchema } from "./proto/zitadel/user/v2/password_pb";
 import { type SearchQuery, SearchQuerySchema } from "./proto/zitadel/user/v2/query_pb";
 import { SendInviteCodeSchema } from "./proto/zitadel/user/v2/user_pb";
@@ -152,7 +149,10 @@ export class ZitadelAPI {
 		);
 	}
 
-	static getBrandingSettings({ serviceConfig, organization }: WithServiceConfig<{ organization?: string }>) {
+	static getBrandingSettings({
+		serviceConfig,
+		organization,
+	}: WithServiceConfig<{ organization?: string }>) {
 		return ZitadelAPI.cached(
 			serviceConfig,
 			`getBrandingSettings-${organization || "instance"}`,
@@ -178,7 +178,10 @@ export class ZitadelAPI {
 		});
 	}
 
-	static getLoginSettings({ serviceConfig, organization }: WithServiceConfig<{ organization?: string }>) {
+	static getLoginSettings({
+		serviceConfig,
+		organization,
+	}: WithServiceConfig<{ organization?: string }>) {
 		return ZitadelAPI.cached(
 			serviceConfig,
 			`getLoginSettings-${organization || "instance"}`,
@@ -313,7 +316,12 @@ export class ZitadelAPI {
 		userAgent: UserAgent;
 	}>) {
 		const sessions = await ZitadelClient.service(SessionService, serviceConfig);
-		return sessions.createSession({ checks, lifetime, userAgent, ...(challenges ? { challenges } : {}) });
+		return sessions.createSession({
+			checks,
+			lifetime,
+			userAgent,
+			...(challenges ? { challenges } : {}),
+		});
 	}
 
 	static async createSessionForUserIdAndIdpIntent({
@@ -425,13 +433,19 @@ export class ZitadelAPI {
 	}
 
 	/** Non-deprecated CreateUser (supports user metadata). */
-	static async createUser({ serviceConfig, request }: WithServiceConfig<{ request: CreateUserRequest }>) {
+	static async createUser({
+		serviceConfig,
+		request,
+	}: WithServiceConfig<{ request: CreateUserRequest }>) {
 		const users = await ZitadelClient.service(UserService, serviceConfig);
 		return users.createUser(request);
 	}
 
 	/** Non-deprecated UpdateUser (can update metadata in the same request). */
-	static async updateUser({ serviceConfig, request }: WithServiceConfig<{ request: UpdateUserRequest }>) {
+	static async updateUser({
+		serviceConfig,
+		request,
+	}: WithServiceConfig<{ request: UpdateUserRequest }>) {
 		const users = await ZitadelClient.service(UserService, serviceConfig);
 		return users.updateUser(request);
 	}
@@ -441,7 +455,10 @@ export class ZitadelAPI {
 		return users.getUserByID({ userId });
 	}
 
-	static async humanMFAInitSkipped({ serviceConfig, userId }: WithServiceConfig<{ userId: string }>) {
+	static async humanMFAInitSkipped({
+		serviceConfig,
+		userId,
+	}: WithServiceConfig<{ userId: string }>) {
 		const users = await ZitadelClient.service(UserService, serviceConfig);
 		return users.humanMFAInitSkipped({ userId });
 	}
@@ -598,7 +615,10 @@ export class ZitadelAPI {
 		});
 	}
 
-	static async setPassword({ serviceConfig, payload }: WithServiceConfig<{ payload: SetPasswordRequest }>) {
+	static async setPassword({
+		serviceConfig,
+		payload,
+	}: WithServiceConfig<{ payload: SetPasswordRequest }>) {
 		const users = await ZitadelClient.service(UserService, serviceConfig);
 		return users.setPassword(payload);
 	}
@@ -747,9 +767,13 @@ export class ZitadelAPI {
 				},
 			});
 		const orgQuery = (id: string) =>
-			create(SearchQuerySchema, { query: { case: "organizationIdQuery", value: { organizationId: id } } });
+			create(SearchQuerySchema, {
+				query: { case: "organizationIdQuery", value: { organizationId: id } },
+			});
 
-		const queries: SearchQuery[] = [loginNameQuery(suffix ? `${searchValue}@${suffix}` : searchValue)];
+		const queries: SearchQuery[] = [
+			loginNameQuery(suffix ? `${searchValue}@${suffix}` : searchValue),
+		];
 		if (organizationId) {
 			queries.push(orgQuery(organizationId));
 		}
@@ -758,7 +782,7 @@ export class ZitadelAPI {
 
 		const loginNameResult = await users.listUsers({ query: USER_LOOKUP_QUERY, queries });
 
-		if (!loginNameResult || !loginNameResult.details) {
+		if (!loginNameResult?.details) {
 			return { error: t("errors.errorOccured") };
 		}
 		if (loginNameResult.result.length > 1) {
@@ -795,7 +819,7 @@ export class ZitadelAPI {
 			queries: emailAndPhoneQueries,
 		});
 
-		if (!emailOrPhoneResult || !emailOrPhoneResult.details) {
+		if (!emailOrPhoneResult?.details) {
 			return { error: t("errors.errorOccured") };
 		}
 		if (emailOrPhoneResult.result.length > 1) {
@@ -812,13 +836,19 @@ export class ZitadelAPI {
 	// --- Organizations -------------------------------------------------------------
 
 	static getDefaultOrg({ serviceConfig }: WithServiceConfig): Promise<Organization | null> {
-		return ZitadelAPI.cached(serviceConfig, "getDefaultOrg-instance", "getDefaultOrg", false, async () => {
-			const orgs = await ZitadelClient.service(OrganizationService, serviceConfig);
-			const resp = await orgs.listOrganizations({
-				queries: [{ query: { case: "defaultQuery", value: {} } }],
-			});
-			return resp?.result?.[0] ?? null;
-		});
+		return ZitadelAPI.cached(
+			serviceConfig,
+			"getDefaultOrg-instance",
+			"getDefaultOrg",
+			false,
+			async () => {
+				const orgs = await ZitadelClient.service(OrganizationService, serviceConfig);
+				const resp = await orgs.listOrganizations({
+					queries: [{ query: { case: "defaultQuery", value: {} } }],
+				});
+				return resp?.result?.[0] ?? null;
+			},
+		);
 	}
 
 	static async getOrgsByDomain({ serviceConfig, domain }: WithServiceConfig<{ domain: string }>) {
@@ -844,8 +874,10 @@ export class ZitadelAPI {
 		// The login hint only improves the UX at the IdP, so a hint the API would reject (e.g. an
 		// overlong login_hint sent by the RP) is dropped instead of failing the whole IdP flow.
 		const { loginHint, ...redirectUrls } = urls;
-		const content: Partial<RedirectURLs> =
-			loginHint && loginHint.length <= MAX_LOGIN_HINT_LENGTH ? { ...redirectUrls, loginHint } : redirectUrls;
+		const content = create(RedirectURLsSchema, {
+			...redirectUrls,
+			...(loginHint && loginHint.length <= MAX_LOGIN_HINT_LENGTH && { loginHint }),
+		});
 
 		const resp = await users.startIdentityProviderIntent({
 			idpId,
@@ -891,12 +923,18 @@ export class ZitadelAPI {
 
 	// --- OIDC / SAML / device --------------------------------------------------------
 
-	static async getAuthRequest({ serviceConfig, authRequestId }: WithServiceConfig<{ authRequestId: string }>) {
+	static async getAuthRequest({
+		serviceConfig,
+		authRequestId,
+	}: WithServiceConfig<{ authRequestId: string }>) {
 		const oidc = await ZitadelClient.service(OIDCService, serviceConfig);
 		return oidc.getAuthRequest({ authRequestId });
 	}
 
-	static async createCallback({ serviceConfig, req }: WithServiceConfig<{ req: CreateCallbackRequest }>) {
+	static async createCallback({
+		serviceConfig,
+		req,
+	}: WithServiceConfig<{ req: CreateCallbackRequest }>) {
 		const oidc = await ZitadelClient.service(OIDCService, serviceConfig);
 		return oidc.createCallback(req);
 	}
@@ -924,12 +962,18 @@ export class ZitadelAPI {
 		});
 	}
 
-	static async getSAMLRequest({ serviceConfig, samlRequestId }: WithServiceConfig<{ samlRequestId: string }>) {
+	static async getSAMLRequest({
+		serviceConfig,
+		samlRequestId,
+	}: WithServiceConfig<{ samlRequestId: string }>) {
 		const saml = await ZitadelClient.service(SAMLService, serviceConfig);
 		return saml.getSAMLRequest({ samlRequestId });
 	}
 
-	static async createResponse({ serviceConfig, req }: WithServiceConfig<{ req: CreateResponseRequest }>) {
+	static async createResponse({
+		serviceConfig,
+		req,
+	}: WithServiceConfig<{ req: CreateResponseRequest }>) {
 		const saml = await ZitadelClient.service(SAMLService, serviceConfig);
 		return saml.createResponse(req);
 	}

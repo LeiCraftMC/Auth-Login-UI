@@ -4,37 +4,48 @@ export default defineNuxtConfig({
 	devtools: { enabled: true },
 	modules: ["@nuxt/ui"],
 
+	// Served under the Zitadel login path (Zitadel's DefaultLoginURLV2 is
+	// `/ui/v2/login/login?authRequest=`). Override at runtime with NUXT_APP_BASE_URL.
+	app: {
+		baseURL: "/ui/v2/login/",
+		head: {
+			htmlAttrs: { class: "dark" },
+			meta: [{ name: "robots", content: "none" }],
+		},
+	},
+
+	// Icons ship in the client bundle and render as inline SVG (CSS mode uses data: mask images,
+	// which the Zitadel login CSP `img-src` blocks). The fallback endpoint must not live under
+	// /api (the Hono catch-all owns it).
+	icon: {
+		mode: "svg",
+		localApiEndpoint: "/_nuxt_icon",
+		clientBundle: { scan: true },
+	},
+
 	colorMode: {
 		preference: "dark",
 		fallback: "dark",
 		classSuffix: "",
 	},
 
-	ssr: true,
+	// Every page depends on the request's instance, cookies and flow state, all of which the
+	// browser loads from the API — the pages are rendered client-side only.
+	ssr: false,
 
 	css: ["~/assets/css/main.css"],
 
 	nitro: {
-		rollupConfig: { external: ["bun:sqlite"] },
+		// server/ runs on Bun.
+		typescript: {
+			tsConfig: { compilerOptions: { types: ["bun-types"] } },
+		},
 
 		esbuild: {
 			options: {
 				target: "esnext",
 			},
 		},
-	},
-
-	runtimeConfig: {
-		public: {
-			//@ts-ignore
-			appUrl: process.env.APPPREFIX_APP_URL || "http://localhost:12520",
-		},
-	},
-
-	routeRules: {
-		"/dashboard/**": { ssr: false },
-		"/auth/**": { ssr: false },
-		"/**": { ssr: true },
 	},
 
 	telemetry: false,

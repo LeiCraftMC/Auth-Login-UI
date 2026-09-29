@@ -14,10 +14,6 @@
 			"description": "Regenerate the typed API client",
 			"prompt": "Regenerate and verify the generated API client for this full-stack Nuxt project.\n\n1. Run `bun run api-client:generate` (scripts/api-client-generate.ts boots the API in-process and reads its OpenAPI spec — no dev server needed).\n2. Do not hand-edit generated `*.gen.ts` files under `app/api-client/`.\n3. If generation fails, diagnose whether the Hono backend or the OpenAPI route is the issue.\n4. Summarize the outcome and any follow-up needed."
 		},
-		"db": {
-			"description": "Run Drizzle migrations",
-			"prompt": "Run the Drizzle migration flow for this project.\n\n1. Run `bun run db:generate` to generate migrations from `server/lib/db/schema.ts` into `drizzle/migrations/`.\n2. Run `bun run db:migrate` to apply them (the app also auto-migrates on startup when `APPPREFIX_DB_AUTO_MIGRATE` is set).\n3. Summarize what was generated or applied."
-		},
 		"verify": {
 			"description": "Run the repo verification flow",
 			"prompt": "Run the standard verification flow for this Nuxt 4 + Bun project.\n\n1. Run `bun run typecheck` (runs `nuxt typecheck` then `tsc -p ./tsconfig/tsconfig.typecheck.json`).\n2. Run `bun test`.\n3. Summarize any failures or warnings.\n4. If this command was triggered after a code change, fix issues that are clearly caused by that change before summarizing."
@@ -32,7 +28,11 @@
 		},
 		"dev": {
 			"description": "Start or inspect the dev setup",
-			"prompt": "Work on the local development setup for this project.\n\n1. If needed, install dependencies with `bun install`.\n2. Use `bun run dev` for the dev server on port 12520.\n3. If there is a dev-server issue, inspect the Nuxt config, runtime env, and Bun-specific wiring before making changes.\n4. Summarize what you started, changed, or found."
+			"prompt": "Work on the local development setup for this project.\n\n1. If needed, install dependencies with `bun install`.\n2. Use `bun run dev` for the dev server on port 12192 (served under /ui/v2/login/).\n3. If there is a dev-server issue, inspect the Nuxt config, runtime env, and Bun-specific wiring before making changes.\n4. Summarize what you started, changed, or found."
+		},
+		"proto": {
+			"description": "Regenerate the Zitadel protobuf code",
+			"prompt": "Regenerate the Zitadel Connect/protobuf-es code under `server/lib/zitadel/proto/`.\n\n1. Run `bun run proto:generate` (scripts/proto-generate.ts downloads the protos of the pinned Zitadel tag, or use `--proto-dir <path>` for a local checkout, and runs protoc-gen-es in-process — no buf binary needed).\n2. When bumping Zitadel, update `ZITADEL_VERSION` in both scripts/proto-generate.ts and server/lib/utils/constants.ts.\n3. Do not hand-edit the generated files.\n4. Run `bun run typecheck` and summarize what changed."
 		}
 	},
 	"fileScan": {
@@ -44,7 +44,9 @@
 			".nitro/**",
 			".data/**",
 			".cache/**",
-			"dist/**"
+			"dist/**",
+			"server/lib/zitadel/proto/**",
+			"app/api-client/**"
 		]
 	}
 }

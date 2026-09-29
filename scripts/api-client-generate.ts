@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, rmSync } from "fs";
+import { existsSync, mkdirSync, rmSync } from "node:fs";
 import { API } from "../server/lib/api";
 
 if (!existsSync("./data/")) {

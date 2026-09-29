@@ -40,7 +40,10 @@ export class MFA {
 		const appendContext = (params: URLSearchParams) => {
 			if (requestId) params.append("requestId", requestId);
 			if (organization || session.factors?.user?.organizationId) {
-				params.append("organization", organization ?? (session.factors?.user?.organizationId as string));
+				params.append(
+					"organization",
+					organization ?? (session.factors?.user?.organizationId as string),
+				);
 			}
 			return params;
 		};
@@ -63,16 +66,19 @@ export class MFA {
 			if (session.id) params.append("sessionId", session.id);
 			return { redirect: `/mfa/set?${appendContext(params)}` };
 		} else if (
-			// Unreachable in the Zitadel login as well (the conditions overlap with the branch above);
-			// kept to stay behaviourally identical.
+			// biome-ignore lint/suspicious/noDuplicateElseIf: covered by the branch above in the Zitadel login too (eslint no-dupe-else-if disabled there); kept for parity
 			loginSettings?.mfaInitSkipLifetime &&
 			(loginSettings.mfaInitSkipLifetime.nanos > 0 || loginSettings.mfaInitSkipLifetime.seconds > 0) &&
 			!availableMultiFactors.length &&
 			session?.factors?.user?.id &&
 			MFA.shouldEnforceMFA(session, loginSettings)
 		) {
-			const userResponse = await ZitadelAPI.getUserByID({ serviceConfig, userId: session.factors.user.id });
-			const humanUser = userResponse?.user?.type.case === "human" ? userResponse.user.type.value : undefined;
+			const userResponse = await ZitadelAPI.getUserByID({
+				serviceConfig,
+				userId: session.factors.user.id,
+			});
+			const humanUser =
+				userResponse?.user?.type.case === "human" ? userResponse.user.type.value : undefined;
 
 			if (humanUser?.mfaInitSkipped) {
 				const lifetimeMillis =

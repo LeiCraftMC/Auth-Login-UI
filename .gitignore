@@ -12,9 +12,6 @@ out/
 dist/
 *.tgz
 
-# Drizzle artifacts
-.drizzle
-
 # TypeScript
 *.tsbuildinfo
 
@@ -42,8 +39,6 @@ yarn-error.log*
 #Tests
 tmp-data-*
 
-# Backend data & config (keep examples)
+# Runtime data (system-user key, temp OpenAPI spec)
 data/
 !app/data/
-config/*
-!config/*.example.json

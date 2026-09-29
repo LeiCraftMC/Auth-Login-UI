@@ -1,13 +1,19 @@
 export const DOCS_TAGS = {
-	ACCOUNT: "Account",
-	ACCOUNT_API_KEYS: "Account / API Keys",
-	ACCOUNT_PREFERENCES: "Account / Preferences",
-
-	AUTHENTICATION: "Authentication",
-
-	ADMIN_API: {
-		BASE: "Admin API",
-
-		USERS: "Admin API / Users",
-	},
-};
+	SETTINGS: "Settings",
+	LOGIN_NAME: "Login Name",
+	ACCOUNTS: "Accounts",
+	PASSWORD: "Password",
+	PASSKEY: "Passkey",
+	U2F: "U2F",
+	OTP: "OTP",
+	MFA: "MFA",
+	AUTHENTICATOR: "Authenticator",
+	SESSION: "Session",
+	FLOW: "Flow",
+	REGISTER: "Register",
+	VERIFY: "Verify",
+	SIGNED_IN: "Signed In",
+	LOGOUT: "Logout",
+	DEVICE: "Device",
+	IDP: "Identity Providers",
+} as const;

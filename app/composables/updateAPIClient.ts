@@ -1,30 +1,23 @@
 /**
- * updateAPIClient — point the generated SDK at the API and attach the bearer token.
+ * updateAPIClient — point the generated SDK at the same-origin API.
  *
- * `ignoreResponseError: true` means the client never throws on non-2xx; the
- * `{ success, code, message, data }` envelope is always returned and callers branch on
- * `result.success`. `baseURL` is `<appUrl>/api/v1` (or `/api` for unversioned APIs).
- * See docs/05-api-contract.md and docs/07-state-and-data.md.
+ * The login state lives in httpOnly cookies, so there is no token to attach. The organization of
+ * the page is sent as `x-zitadel-i18n-organization` so translated error messages use its custom
+ * texts (the Zitadel login's proxy sets the same header from `?organization=`).
+ *
+ * The generated client is `@hey-api/client-fetch` (like LAVIAC — client-nuxt's generated code
+ * fails vue-tsc here, see `openapi-ts.config.ts`). It resolves to `{ data?, error?, … }`;
+ * `useAPI` unwraps the `{ success, code, message, data }` envelope. `throwOnError: false` returns
+ * non-2xx responses instead of throwing.
  */
 import { client } from "@/api-client/client.gen";
 import { useRuntimeAppConfigs } from "./useRuntimeAppConfigs";
 
-export function updateAPIClient(token: string | null) {
-	const appUrl = useRuntimeAppConfigs().appUrl.replace(/\/$/, "");
-	const apiURL = `${appUrl}/api/v1`;
-
-	if (token) {
-		client.setConfig({
-			baseURL: apiURL,
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-			ignoreResponseError: true,
-		});
-	} else {
-		client.setConfig({
-			baseURL: apiURL,
-			ignoreResponseError: true,
-		});
-	}
+export function updateAPIClient(i18nOrganization?: string) {
+	client.setConfig({
+		baseUrl: useRuntimeAppConfigs().apiURL,
+		credentials: "same-origin",
+		headers: { "x-zitadel-i18n-organization": i18nOrganization || null },
+		throwOnError: false,
+	});
 }

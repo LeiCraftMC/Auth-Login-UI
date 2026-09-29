@@ -1,8 +1,9 @@
 /**
  * Session validity (port of the Zitadel login's `lib/session.ts`).
  */
-import { Code, ConnectError } from "@connectrpc/connect";
+
 import { type Timestamp, timestampDate } from "@bufbuild/protobuf/wkt";
+import { Code, ConnectError } from "@connectrpc/connect";
 import { ConfigHandler } from "../utils/config";
 import { Logger } from "../utils/logger";
 import { type ServiceConfig, ZitadelAPI } from "../zitadel/api";
@@ -65,12 +66,14 @@ export class LoginSessions {
 	} {
 		const validPassword = session?.factors?.password?.verifiedAt;
 		const validPasskey =
-			session?.factors?.webAuthN?.verifiedAt && !!session?.factors?.webAuthN?.userVerified
+			session?.factors?.webAuthN?.verifiedAt && session?.factors?.webAuthN?.userVerified
 				? session?.factors?.webAuthN?.verifiedAt
 				: undefined;
 		const validIDP = session?.factors?.intent?.verifiedAt;
 
-		const stillValid = session.expirationDate ? timestampDate(session.expirationDate) > new Date() : true;
+		const stillValid = session.expirationDate
+			? timestampDate(session.expirationDate) > new Date()
+			: true;
 
 		const verifiedAt = validPassword || validPasskey || validIDP;
 		return { valid: !!(verifiedAt && stillValid), verifiedAt };
@@ -122,7 +125,8 @@ export class LoginSessions {
 			const totpValid =
 				mfaMethods.includes(AuthenticationMethodType.TOTP) && !!session.factors.totp?.verifiedAt;
 			const otpEmailValid =
-				mfaMethods.includes(AuthenticationMethodType.OTP_EMAIL) && !!session.factors.otpEmail?.verifiedAt;
+				mfaMethods.includes(AuthenticationMethodType.OTP_EMAIL) &&
+				!!session.factors.otpEmail?.verifiedAt;
 			const otpSmsValid =
 				mfaMethods.includes(AuthenticationMethodType.OTP_SMS) && !!session.factors.otpSms?.verifiedAt;
 			const u2fValid =
@@ -156,8 +160,12 @@ export class LoginSessions {
 		}
 
 		if (ConfigHandler.getConfig()?.EMAIL_VERIFICATION) {
-			const userResponse = await ZitadelAPI.getUserByID({ serviceConfig, userId: session.factors.user.id });
-			const humanUser = userResponse?.user?.type.case === "human" ? userResponse.user.type.value : undefined;
+			const userResponse = await ZitadelAPI.getUserByID({
+				serviceConfig,
+				userId: session.factors.user.id,
+			});
+			const humanUser =
+				userResponse?.user?.type.case === "human" ? userResponse.user.type.value : undefined;
 			if (humanUser && !humanUser.email?.isVerified) {
 				Logger.warn("[Session] Email is not verified");
 				return false;
@@ -190,7 +198,9 @@ export class LoginSessions {
 		});
 
 		if (organization) {
-			sessionsWithHint = sessionsWithHint.filter((s) => s.factors?.user?.organizationId === organization);
+			sessionsWithHint = sessionsWithHint.filter(
+				(s) => s.factors?.user?.organizationId === organization,
+			);
 		}
 
 		if (sessionsWithHint.length === 0) return undefined;
@@ -213,7 +223,10 @@ export class LoginSessions {
 	static async listFromCookies(ctx: LoginContext, ids: string[]): Promise<Session[]> {
 		const filtered = ids.filter((id) => !!id);
 		if (!filtered.length) return [];
-		const response = await ZitadelAPI.listSessions({ serviceConfig: ctx.serviceConfig, ids: filtered });
+		const response = await ZitadelAPI.listSessions({
+			serviceConfig: ctx.serviceConfig,
+			ids: filtered,
+		});
 		return response?.sessions ?? [];
 	}
 }

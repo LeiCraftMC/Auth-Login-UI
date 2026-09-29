@@ -8,7 +8,10 @@ import { ConnectError } from "@connectrpc/connect";
 import { Logger } from "../utils/logger";
 import { ZitadelAPI } from "../zitadel/api";
 import { CredentialsCheckErrorSchema } from "../zitadel/proto/zitadel/message_pb";
-import type { Challenges, RequestChallenges } from "../zitadel/proto/zitadel/session/v2/challenge_pb";
+import type {
+	Challenges,
+	RequestChallenges,
+} from "../zitadel/proto/zitadel/session/v2/challenge_pb";
 import type { Session } from "../zitadel/proto/zitadel/session/v2/session_pb";
 import type { Checks } from "../zitadel/proto/zitadel/session/v2/session_service_pb";
 import type { LoginContext } from "./context";
@@ -22,7 +25,12 @@ const DEFAULT_LIFETIME: Duration = { seconds: BigInt(24 * 60 * 60), nanos: 0 } a
 export type FailedAttemptsError = { error: string; failedAttempts: number };
 
 export function isFailedAttemptsError(error: unknown): error is FailedAttemptsError {
-	return !!error && typeof error === "object" && "failedAttempts" in error && !!(error as any).failedAttempts;
+	return (
+		!!error &&
+		typeof error === "object" &&
+		"failedAttempts" in error &&
+		!!(error as any).failedAttempts
+	);
 }
 
 function passwordAttemptsHandler(error: unknown): never {
@@ -47,7 +55,9 @@ export type SessionWithChallenges = Session & { challenges: Challenges | undefin
 
 export class LoginSessionCookie {
 	private static async iFrameEnabled(ctx: LoginContext) {
-		const securitySettings = await ZitadelAPI.getSecuritySettings({ serviceConfig: ctx.serviceConfig });
+		const securitySettings = await ZitadelAPI.getSecuritySettings({
+			serviceConfig: ctx.serviceConfig,
+		});
 		return !!securitySettings?.embeddedIframe?.enabled;
 	}
 
@@ -61,7 +71,7 @@ export class LoginSessionCookie {
 		},
 	): Promise<{ session: Session; sessionCookie: SessionCookie; challenges?: Challenges }> {
 		let lifetime = command.lifetime;
-		if (!lifetime || !lifetime.seconds) {
+		if (!lifetime?.seconds) {
 			Logger.warn("No session lifetime provided, using default of 24 hours");
 			lifetime = DEFAULT_LIFETIME; // e.g. user discovery
 		}
@@ -126,7 +136,7 @@ export class LoginSessionCookie {
 		},
 	): Promise<Session> {
 		let sessionLifetime = lifetime;
-		if (!sessionLifetime || !sessionLifetime.seconds) {
+		if (!sessionLifetime?.seconds) {
 			Logger.warn("No IDP session lifetime provided, using default of 24 hours");
 			sessionLifetime = DEFAULT_LIFETIME;
 		}

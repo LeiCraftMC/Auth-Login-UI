@@ -8,9 +8,16 @@ import { Code } from "@connectrpc/connect";
 import { Logger } from "../utils/logger";
 import { ZitadelAPI } from "../zitadel/api";
 import { isClassifiedError } from "../zitadel/errors";
-import type { Challenges, RequestChallenges } from "../zitadel/proto/zitadel/session/v2/challenge_pb";
+import type {
+	Challenges,
+	RequestChallenges,
+} from "../zitadel/proto/zitadel/session/v2/challenge_pb";
 import type { Factors, Session } from "../zitadel/proto/zitadel/session/v2/session_pb";
-import { type Checks, ChecksSchema } from "../zitadel/proto/zitadel/session/v2/session_service_pb";
+import {
+	type Checks,
+	ChecksSchema,
+	CheckUserSchema,
+} from "../zitadel/proto/zitadel/session/v2/session_service_pb";
 import type { AuthenticationMethodType } from "../zitadel/proto/zitadel/user/v2/user_service_pb";
 import type { LoginContext } from "./context";
 import { type SessionCookie, SessionCookies } from "./cookies";
@@ -40,7 +47,13 @@ export class LoginSessionActions {
 			loginName,
 			sessionId,
 			organization,
-		}: { userId: string; loginName?: string; sessionId?: string; requestId?: string; organization?: string },
+		}: {
+			userId: string;
+			loginName?: string;
+			sessionId?: string;
+			requestId?: string;
+			organization?: string;
+		},
 	): Promise<FlowResult> {
 		const serviceConfig = ctx.serviceConfig;
 		const loginSettings = await ZitadelAPI.getLoginSettings({ serviceConfig, organization });
@@ -55,7 +68,11 @@ export class LoginSessionActions {
 			);
 		}
 		if (loginName) {
-			return LoginFlow.completeFlowOrGetUrl(ctx, { loginName, organization }, loginSettings?.defaultRedirectUri);
+			return LoginFlow.completeFlowOrGetUrl(
+				ctx,
+				{ loginName, organization },
+				loginSettings?.defaultRedirectUri,
+			);
 		}
 		return { error: "Could not skip MFA and continue" };
 	}
@@ -87,9 +104,12 @@ export class LoginSessionActions {
 		const valid = await LoginSessions.isSessionValid({ serviceConfig, session });
 
 		if (!valid) {
-			Logger.warn("continueWithSession: session is not valid (e.g. MFA not completed), re-authenticating", {
-				sessionId: session.id,
-			});
+			Logger.warn(
+				"continueWithSession: session is not valid (e.g. MFA not completed), re-authenticating",
+				{
+					sessionId: session.id,
+				},
+			);
 
 			// routes to the MFA page if the password is still valid
 			const res = await LoginName.sendLoginname(ctx, {
@@ -191,7 +211,7 @@ export class LoginSessionActions {
 					: undefined;
 		}
 
-		if (!lifetime || !lifetime.seconds) {
+		if (!lifetime?.seconds) {
 			Logger.warn("No lifetime provided for session, defaulting to 24 hours");
 			lifetime = DEFAULT_LIFETIME;
 		}
@@ -221,10 +241,10 @@ export class LoginSessionActions {
 			if (!user?.userId) throw error;
 
 			const result = await LoginSessionCookie.createSessionAndUpdateCookie(ctx, {
-				checks: create(ChecksSchema, {
-					...(checks || {}),
-					user: { search: { case: "userId", value: user.userId } },
-				}),
+				checks: {
+					...(checks ?? create(ChecksSchema)),
+					user: create(CheckUserSchema, { search: { case: "userId", value: user.userId } }),
+				},
 				requestId,
 				lifetime,
 				challenges,
@@ -259,7 +279,10 @@ export class LoginSessionActions {
 	}
 
 	/** Deletes the session in Zitadel and removes it from the cookie. */
-	static async clearSession(ctx: LoginContext, { sessionId }: { sessionId: string }): Promise<{ error?: string }> {
+	static async clearSession(
+		ctx: LoginContext,
+		{ sessionId }: { sessionId: string },
+	): Promise<{ error?: string }> {
 		const serviceConfig = ctx.serviceConfig;
 
 		const sessionCookie = SessionCookies.getById(ctx, { sessionId });
@@ -280,9 +303,12 @@ export class LoginSessionActions {
 				const t = await ctx.t("error");
 				return { error: t("couldNotClearSession") };
 			}
-			Logger.warn("clearSession: session rejected the cookie token (gone or stale), pruning cookie entry", {
-				sessionId: sessionCookie.id,
-			});
+			Logger.warn(
+				"clearSession: session rejected the cookie token (gone or stale), pruning cookie entry",
+				{
+					sessionId: sessionCookie.id,
+				},
+			);
 		}
 
 		const securitySettings = await ZitadelAPI.getSecuritySettings({ serviceConfig });

@@ -1,4 +1,4 @@
-import { type MiddlewareHandler } from "hono";
+import type { MiddlewareHandler } from "hono";
 import { type DescribeRouteOptions, describeRoute, resolver } from "hono-openapi";
 import { z } from "zod";
 import { Utils } from "../../utils";

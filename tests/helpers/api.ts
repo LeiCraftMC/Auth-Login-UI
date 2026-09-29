@@ -1,7 +1,8 @@
 import { expect } from "bun:test";
-import { ZodType, z } from "zod";
+import type { ZodType } from "zod";
 import { API } from "../../server/lib/api";
 import { Logger } from "../../server/lib/utils/logger";
+import { TEST_PUBLIC_HOST } from "./preload";
 
 type HeadersInit = RequestInit["headers"];
 
@@ -9,16 +10,19 @@ export async function makeAPIRequest<ReturnBody = any>(
 	path: string,
 	opts: {
 		method?: "GET" | "POST" | "PUT" | "DELETE";
-		authToken?: string;
+		/** Cookie header, e.g. a `sessions` cookie returned by an earlier request. */
+		cookie?: string;
 		body?: Record<string, any>;
 		expectedBodySchema?: ZodType<ReturnBody>;
 		additionalOptions?: RequestInit;
 	} = {},
 	expectedCode?: number,
 ) {
+	// LoginContext derives the instance and public host from the Host header.
 	const baseHeaders: HeadersInit = {
+		host: TEST_PUBLIC_HOST,
 		...(opts.body ? { "Content-Type": "application/json" } : {}),
-		...(opts.authToken ? { Authorization: `Bearer ${opts.authToken}` } : {}),
+		...(opts.cookie ? { cookie: opts.cookie } : {}),
 	};
 
 	if (opts.additionalOptions?.headers) {
@@ -74,7 +78,7 @@ export async function makeAPIRequest<ReturnBody = any>(
 			return parseResult.data;
 		} else {
 			Logger.error("Response body did not match expected schema:", parseResult.error.message);
-			//@ts-ignore
+			//@ts-expect-error
 			expect(parseResult.success).toBe(true);
 		}
 	}

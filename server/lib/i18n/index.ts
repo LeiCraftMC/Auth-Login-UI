@@ -7,10 +7,11 @@
  * login: instance default language, then `Accept-Language`, then the `NEXT_LOCALE` cookie, all
  * restricted to the instance's allowed languages.
  */
-import { ZitadelAPI } from "../zitadel/api";
-import type { ServiceConfig, Translate } from "../zitadel/api";
+
 import { ConfigHandler } from "../utils/config";
 import { Logger } from "../utils/logger";
+import type { ServiceConfig, Translate } from "../zitadel/api";
+import { ZitadelAPI } from "../zitadel/api";
 import ar from "./locales/ar.json";
 import de from "./locales/de.json";
 import en from "./locales/en.json";

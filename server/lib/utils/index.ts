@@ -1,5 +1,5 @@
-import { randomBytes as crypto_randomBytes } from "crypto";
-import { mkdir as fs_mkdir } from "fs/promises";
+import { randomBytes as crypto_randomBytes } from "node:crypto";
+import { mkdir as fs_mkdir } from "node:fs/promises";
 
 export class Utils {
 	static getRandomU32() {

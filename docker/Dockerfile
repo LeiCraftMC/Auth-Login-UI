@@ -1,17 +1,17 @@
 # Production image: the full-stack server bundle (.output/ — Nuxt + the Hono API, Bun preset) on
-# the Bun runtime. Build it first (CI does this): `bun run build`. .output/ is self-contained; only
-# the Drizzle migrations are copied next to it (DB.init reads ./drizzle/migrations on startup).
-# Runtime config comes from env: set the public app URL twice — `APPPREFIX_APP_URL` (API side:
-# CORS, links in emails) and `NUXT_PUBLIC_APP_URL` (the URL the browser's API client calls).
+# the Bun runtime. Build it first (CI does this): `bun run build`. .output/ is self-contained.
+# Configuration comes from the LCMC_AUTH_LOGIN_* env (see example.env) and NUXT_APP_BASE_URL.
+# Health probes: GET /ui/v2/login/healthy (liveness), /ui/v2/login/ready (readiness).
 FROM oven/bun:1-slim
 
-WORKDIR /app
+WORKDIR /opt/leicraftmc/auth/login-ui
 
-COPY ./.output ./.output
-COPY ./drizzle/migrations ./drizzle/migrations
+COPY .output ./app/.output
 
-ENV PORT=12520
+EXPOSE 12192/tcp
 
-EXPOSE 12520/tcp
+ENV NITRO_ENV=production
+ENV NITRO_HOST=::
+ENV NITRO_PORT=12192
 
 CMD ["bun", "run", ".output/server/index.mjs"]

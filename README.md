@@ -1,92 +1,92 @@
-# <ProjectName> Full-stack Nuxt App
+# LeiCraftMC Auth Login UI
 
-Full-stack template: Nuxt 4 frontend **and** a Hono backend living in `server/`, mounted at `/api`.
+The login of LeiCraftMC Auth: a drop-in replacement for the **Zitadel Login V2**
+([`zitadel/apps/login`](https://github.com/zitadel/zitadel/tree/main/apps/login), ported from tag
+**v4.19.2**) in the LeiCraftMC design. It serves the same pages, query parameters, cookies and flows
+(OIDC, SAML, device authorization, IdPs incl. LDAP, passkeys, U2F, TOTP/SMS/email OTP, registration,
+invites, logout), so Zitadel can use it as its login without further changes.
+
+It talks to Zitadel **only as a system API user** (JWT signed with the system user's key, audience
+`AUDIENCE`). One deployment serves all virtual instances: the instance of every request is taken from
+its host (`Host`, or `x-zitadel-instance-host` / `x-zitadel-public-host` behind a proxy).
 
 ## Stack
 
-- Nuxt 4 (`app/` srcDir) + NuxtUI v4 + Tailwind v4 (CSS-first)
-- Hono + Zod + `hono-openapi` (Scalar) in `server/`, mounted at `/api` via a catch-all Nitro route
-- Drizzle ORM + `bun-sqlite`
-- Bun runtime (Nitro `bun` preset)
-- Biome formatter/linter
-- AGPL-3.0
+- Nuxt 4 (`app/` srcDir) + NuxtUI v4 + Tailwind v4, client-rendered pages, dark-only LeiCraftMC design
+  with the logo and primary color of the instance / organization branding
+- Hono + Zod + `hono-openapi` (Scalar) in `server/`, mounted at `<base>/api`
+- Connect (`@connectrpc/connect-web`, binary protobuf) with protobuf-es code generated from the
+  Zitadel v4.19.2 protos (`server/lib/zitadel/proto/`)
+- Bun runtime (Nitro `bun` preset), Biome, AGPL-3.0
 
 ## Setup
 
 ```bash
 bun install
-cp example.env .env
-# Default port 12520 (package.json + example.env). Give each app its own port — see docs/02 — Ports.
-bun run dev
+cp example.env .env   # fill in the Zitadel system user, see below
+bun run dev           # http://localhost:12192/ui/v2/login/
 ```
 
-The dev server boots Nuxt; the `server/plugins/startup.ts` Nitro plugin initializes the DB and the
-Hono `API` on boot. Endpoints are at `/api/v1/**`, `/api/health`, `/api/docs/v1`.
+### Zitadel
 
-## API client
+1. **System API user**: add a system user to the Zitadel runtime configuration (`SystemAPIUsers`)
+   with the public key of `LCMC_AUTH_LOGIN_SYSTEM_USER_PRIVATE_KEY(_FILE)` and a system-level
+   membership that allows acting as login client on every instance. Set `LCMC_AUTH_LOGIN_AUDIENCE`
+   to the audience Zitadel expects (its external URL). See
+   [Access the Zitadel System API](https://zitadel.com/docs/guides/integrate/zitadel-apis/access-zitadel-system-api)
+   and [Login UI](https://zitadel.com/docs/guides/integrate/login-ui).
+2. **Login V2 per instance**: enable the Login V2 feature with the base URI of this app, e.g.
+   `https://auth.leicraftmc.de/ui/v2/login` — Zitadel then redirects to
+   `…/ui/v2/login/login?authRequest=…`, and links in emails point to `…/ui/v2/login/<page>`.
+3. **Routing**: route `/ui/v2/login/*` of each instance domain to this app, and keep the original
+   `Host` (or send `x-zitadel-public-host` / `x-zitadel-instance-host`). Everything else goes to
+   Zitadel. With `PROXY_ZITADEL_PATHS` the app also forwards `<base>/.well-known`, `/oauth`, `/oidc`,
+   `/idps/callback`, `/saml` and `/assets` to Zitadel, like the Zitadel login.
+4. **Session cookie secret**: set `LCMC_AUTH_LOGIN_SESSION_COOKIE_SECRET` (≥ 32 characters). The
+   signature format is identical to the Zitadel login's; with the same secret, its `sessions` cookie
+   stays valid when switching between the two logins.
 
-Generate the typed client from the backend's OpenAPI spec. The script boots the API in-process
-(`scripts/api-client-generate.ts`), so no dev server is needed:
-
-```bash
-bun run api-client:generate
-```
-
-## Frontend
-
-The template ships a complete app shell. Delete whatever your project doesn't need.
-
-| Route | Layout | What it is |
-| --- | --- | --- |
-| `/` | `default` | Marketing landing page (hero, features, how-it-works, CTA) |
-| `/auth/login`, `/auth/forgot-password`, `/auth/reset-password` | `auth` | Login and password reset |
-| `/auth/signup` | `auth` | Signup form, **UI only**: the backend has no register route yet |
-| `/welcome` | `onboarding` | One-time onboarding after the first login |
-| `/dashboard`, `/dashboard/settings`, `/dashboard/settings/security`, `/dashboard/apikeys` | `dashboard` | Overview, profile, password/account deletion, API keys |
-| `/dashboard/admin/users` | `dashboard` | Admin-only user management |
-
-Who may open what is set by the constants at the top of `app/middleware/auth.global.ts`:
-`HOME_ROUTE`, `PROTECTED_PREFIXES`, `ADMIN_PREFIXES`, `PUBLIC_ROUTES`, `ONBOARDING_ROUTE` and
-`REQUIRE_ONBOARDING`.
-
-Trimming it down:
-
-- **Everything behind login (no public landing page):** set `PROTECTED_PREFIXES = ["/"]` and
-  `HOME_ROUTE = "/"`, and replace `pages/index.vue` with your app's home (for example the dashboard
-  overview).
-- **No dashboard:** delete `layouts/dashboard.vue`, `pages/dashboard/` and `components/dashboard/`,
-  remove the Dashboard links from `components/layout/Header.vue` and `Footer.vue`, and point
-  `PROTECTED_PREFIXES` at your protected pages.
-- **No onboarding:** set `REQUIRE_ONBOARDING = false`, or delete `pages/welcome.vue`,
-  `layouts/onboarding.vue`, `composables/stores/useOnboardingStore.ts` and the onboarding block in
-  the guard.
-- **No signup:** delete `pages/auth/signup.vue` and its link in `pages/auth/login.vue`.
-- **No admin area:** delete `pages/dashboard/admin/`, the Admin group in `layouts/dashboard.vue` and
-  the "Manage Users" entry in `components/dashboard/UserMenu.vue`.
-
-Placeholders to replace: `ProjectName` (texts, SEO titles, logo), `<PREFIX>` (session cookie name
-in `composables/useAppCookies.ts`), and the links in `components/layout/Footer.vue`.
-
-## Scripts
-
-- `bun run dev` — dev server on port 12520 (frontend + API)
-- `bun run build` — production build (single `.output/`, Bun preset)
-- `bun run start` — run the built server
-- `docker/Dockerfile` — production image: `.output/` + `drizzle/migrations` on `oven/bun`
-- `bun run api-client:generate` — regenerate the typed API client
-- `bun run db:generate` / `db:migrate` — Drizzle migrations
-- `bun run check` / `bun run format` — Biome check / format
-- `bun run typecheck` — `nuxt typecheck` + `tsc` (includes `server/`)
-- `bun test` — run tests
+All settings are documented in [`example.env`](example.env); names in parentheses there are the
+Zitadel login's variables.
 
 ## Structure
 
-See the LeiCraftMC style guide:
+| Path | What |
+| --- | --- |
+| `app/pages/**` | The login pages at the Zitadel login paths (`/loginname`, `/password`, `/otp/[method]`, `/idp/[provider]/process`, …) |
+| `app/components/login/` | Shared login components (`<LoginCard>`, `<LoginIdpButtons>`, session lists, authenticator choosers, …) |
+| `app/composables/` | `useAPI`, `useLoginPage` (page data), `useLoginFlow` (login steps: redirects, SAML posts, errors), `useTranslations`, `useBrandingTheme` |
+| `server/lib/api/versions/v1/routes/` | Page data (`GET`) and login steps (`POST`/`PUT`/`DELETE`) — the Zitadel login's server components and server actions |
+| `server/lib/login/` | The login logic (port of the Zitadel login's `lib/server/*`) |
+| `server/lib/protocol/` + `server/middleware/protocol.ts` | `GET /login` (flow start), `/healthy`, `/ready`, the Zitadel proxy paths, security headers + CSP |
+| `server/lib/zitadel/` | System-user token, Connect clients, cached Zitadel API, generated protos |
+| `server/lib/i18n/` | The 15 Zitadel login languages, language resolution and Zitadel custom texts |
 
-- [docs/01-project-structure.md](https://github.com/LeiCraftMC/Style-Guides/blob/main/docs/01-project-structure.md) — the full-stack Nuxt shape
-- [docs/04-backend-hono.md](https://github.com/LeiCraftMC/Style-Guides/blob/main/docs/04-backend-hono.md) — Mounting Hono in Nitro
-- [docs/06-frontend-nuxt.md](https://github.com/LeiCraftMC/Style-Guides/blob/main/docs/06-frontend-nuxt.md)
+## Scripts
 
-## License
+- `bun run dev` — dev server on port 12192 (frontend + API)
+- `bun run build` / `bun run start` — production build (single `.output/`, Bun preset) and run it
+- `docker/Dockerfile` — production image (`.output/` on `oven/bun`, port 12192)
+- `bun run api-client:generate` — regenerate the typed API client (`app/api-client/`)
+- `bun run proto:generate` — regenerate the Zitadel protobuf code (pinned tag, no `buf` binary needed)
+- `bun run check` / `bun run format` — Biome check / format
+- `bun run typecheck` — `nuxt typecheck` + `tsc` (includes `server/` and `tests/`)
+- `bun test` — tests; Zitadel is replaced by an in-memory Connect router (`tests/helpers/zitadel.ts`)
 
-AGPL-3.0
+## Differences to the Zitadel login
+
+Behaviour is kept identical; these are deliberate differences:
+
+- **Architecture**: Next.js server components / server actions became an API (`<base>/api/v1`) plus
+  client-rendered pages. Mutating API calls require a same-origin `Origin` (the equivalent of Next's
+  server-action origin check; extra origins via `ALLOWED_ORIGINS`).
+- **Authentication**: only the system API user (no service-user token / login client key).
+- **Design**: LeiCraftMC dark design; of the branding settings only the dark logo and a customized
+  primary color are applied (Zitadel's default colors keep the LeiCraftMC color). No light theme.
+- **Hardening / fixes** over v4.19.2: the OTP email link template, the session used to continue a
+  flow and the default redirect URI are resolved server-side instead of trusting the client;
+  `/mfa/skip` checks that the session belongs to the user; a failed TOTP confirmation shows its error;
+  the `/login` LDAP scope redirect goes to `/idp/ldap?idpId=…` (upstream: missing `/ldap` page); the
+  OTP setup "continue" link uses `requestId=` (upstream: `authRequest=`); the device consent screen
+  uses its existing texts (upstream looks up `device.device.*` keys that don't exist); a failed device
+  approval on `/signedin` is shown; `postErrorRedirectUrl` links only lead to login pages.

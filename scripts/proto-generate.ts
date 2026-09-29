@@ -15,8 +15,9 @@
  * Bump `ZITADEL_VERSION` together with the Zitadel server and the login source it is ported from,
  * then run `bun run proto:generate`. Never hand-edit the generated `*_pb.ts` files.
  */
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "fs";
-import path from "path";
+
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import path from "node:path";
 import { create, type DescFile } from "@bufbuild/protobuf";
 import {
 	CodeGeneratorRequestSchema,
@@ -39,7 +40,7 @@ import {
 	OneofDescriptorProtoSchema,
 	ServiceDescriptorProtoSchema,
 } from "@bufbuild/protobuf/wkt";
-// @ts-ignore - protoc-gen-es ships no typings for its plugin entry point
+// @ts-expect-error - protoc-gen-es ships no typings for its plugin entry point
 import { protocGenEs } from "@bufbuild/protoc-gen-es/dist/cjs/src/protoc-gen-es-plugin.js";
 import protobuf from "protobufjs";
 

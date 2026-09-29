@@ -140,13 +140,20 @@ export class LoginFlow {
 	}
 
 	/** Fallback when a request was already handled (old emails with a stale requestId). */
-	private static async alreadyHandled(ctx: LoginContext, serviceConfig: ServiceConfig, session: Session) {
+	private static async alreadyHandled(
+		ctx: LoginContext,
+		serviceConfig: ServiceConfig,
+		session: Session,
+	) {
 		const loginSettings = await ZitadelAPI.getLoginSettings({
 			serviceConfig,
 			organization: session.factors?.user?.organizationId,
 		});
 
-		if (loginSettings?.defaultRedirectUri && Redirects.isSafeRedirectUri(loginSettings.defaultRedirectUri)) {
+		if (
+			loginSettings?.defaultRedirectUri &&
+			Redirects.isSafeRedirectUri(loginSettings.defaultRedirectUri)
+		) {
 			return { redirect: loginSettings.defaultRedirectUri };
 		}
 		if (loginSettings?.defaultRedirectUri) {

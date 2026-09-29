@@ -42,7 +42,6 @@
 		"@biomejs/biome": "^2.5.14",
 		"@bufbuild/protoc-gen-es": "^2.16.0",
 		"@bufbuild/protoplugin": "^2.16.0",
-		"@hey-api/nuxt": "^0.2.1",
 		"@hey-api/openapi-ts": "^0.99.0",
 		"@iconify-json/lucide": "^1.2.137",
 		"@types/ua-parser-js": "^0.7.39",
@@ -50,5 +49,10 @@
 		"protobufjs": "^7.6.6",
 		"typescript": "^6.0.3",
 		"vue-tsc": "^3.3.11"
+	},
+	"overrides": {
+		"@unhead/vue": "3.4.0",
+		"@unhead/bundler": "3.4.0",
+		"unhead": "3.4.0"
 	}
 }

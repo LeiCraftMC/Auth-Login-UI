@@ -61,7 +61,10 @@ export class LoginRegister {
 		const t = await ctx.t("register");
 		const serviceConfig = ctx.serviceConfig;
 
-		const loginSettings = await ZitadelAPI.getLoginSettings({ serviceConfig, organization: command.organization });
+		const loginSettings = await ZitadelAPI.getLoginSettings({
+			serviceConfig,
+			organization: command.organization,
+		});
 
 		if (!loginSettings) return { error: t("errors.couldNotGetLoginSettings") };
 		if (!loginSettings.allowRegister) return { error: t("errors.registerNotAllowed") };
@@ -113,15 +116,17 @@ export class LoginRegister {
 			return { redirect: `/passkey/set?${params}` };
 		}
 
-		const userResponse = await ZitadelAPI.getUserByID({ serviceConfig, userId: session.factors.user.id }).catch(
-			(error) => {
-				Logger.error("Failed to get user after session creation", error);
-				return null;
-			},
-		);
+		const userResponse = await ZitadelAPI.getUserByID({
+			serviceConfig,
+			userId: session.factors.user.id,
+		}).catch((error) => {
+			Logger.error("Failed to get user after session creation", error);
+			return null;
+		});
 		if (!userResponse?.user) return { error: t("errors.userNotFound") };
 
-		const humanUser = userResponse.user.type.case === "human" ? userResponse.user.type.value : undefined;
+		const humanUser =
+			userResponse.user.type.case === "human" ? userResponse.user.type.value : undefined;
 
 		const emailVerificationCheck = await VerifyHelper.checkEmailVerification(
 			ctx,
@@ -135,8 +140,15 @@ export class LoginRegister {
 		return LoginFlow.completeFlowOrGetUrl(
 			ctx,
 			command.requestId && session.id
-				? { sessionId: session.id, requestId: command.requestId, organization: session.factors.user.organizationId }
-				: { loginName: session.factors.user.loginName, organization: session.factors.user.organizationId },
+				? {
+						sessionId: session.id,
+						requestId: command.requestId,
+						organization: session.factors.user.organizationId,
+					}
+				: {
+						loginName: session.factors.user.loginName,
+						organization: session.factors.user.organizationId,
+					},
 			loginSettings.defaultRedirectUri,
 		);
 	}
@@ -158,7 +170,10 @@ export class LoginRegister {
 		const t = await ctx.t("register");
 		const serviceConfig = ctx.serviceConfig;
 
-		const loginSettings = await ZitadelAPI.getLoginSettings({ serviceConfig, organization: command.organization });
+		const loginSettings = await ZitadelAPI.getLoginSettings({
+			serviceConfig,
+			organization: command.organization,
+		});
 
 		if (!loginSettings) return { error: t("errors.couldNotGetLoginSettings") };
 		if (!loginSettings.allowRegister) return { error: t("errors.registerNotAllowed") };
@@ -187,7 +202,9 @@ export class LoginRegister {
 
 		if (!session?.factors?.user) return { error: t("errors.couldNotCreateSession") };
 
-		let authMethods: Awaited<ReturnType<typeof ZitadelAPI.listAuthenticationMethodTypes>>["authMethodTypes"] | undefined;
+		let authMethods:
+			| Awaited<ReturnType<typeof ZitadelAPI.listAuthenticationMethodTypes>>["authMethodTypes"]
+			| undefined;
 		if (session.factors.user.id) {
 			const response = await ZitadelAPI.listAuthenticationMethodTypes({
 				serviceConfig,
@@ -210,8 +227,15 @@ export class LoginRegister {
 		return LoginFlow.completeFlowOrGetUrl(
 			ctx,
 			command.requestId && session.id
-				? { sessionId: session.id, requestId: command.requestId, organization: session.factors.user.organizationId }
-				: { loginName: session.factors.user.loginName, organization: session.factors.user.organizationId },
+				? {
+						sessionId: session.id,
+						requestId: command.requestId,
+						organization: session.factors.user.organizationId,
+					}
+				: {
+						loginName: session.factors.user.loginName,
+						organization: session.factors.user.organizationId,
+					},
 			loginSettings.defaultRedirectUri,
 		);
 	}

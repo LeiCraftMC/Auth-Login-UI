@@ -4,6 +4,12 @@ export default defineAppConfig({
 			primary: "sky",
 			neutral: "slate",
 		},
+		button: {
+			// Text on solid primary buttons follows the branding color (useBrandingTheme).
+			compoundVariants: [
+				{ color: "primary", variant: "solid", class: "text-(color:--login-on-primary)" },
+			],
+		},
 	},
 	theme: {
 		radius: 0.5,
