@@ -1,0 +1,31 @@
+/*
+ * main.css — Tailwind v4 CSS-first entry (no tailwind.config.js).
+ *
+ * Drop into `app/assets/css/main.css` and reference it from `nuxt.config.ts`:
+ *   css: ["~/assets/css/main.css"]
+ * Dark-only (no light theme, no toggle) — pin `colorMode: { preference: "dark",
+ * fallback: "dark", classSuffix: "" }` in nuxt.config.ts. Pick your project's `--font-sans`
+ * and NuxtUI `primary`/`neutral` in app.config.ts. The `.main-bg-color` value is per-project
+ * (most use slate-950 `rgb(2 6 23)`; Delivr uses `rgb(0 0 0)`, Personal-Website `#0b0c1b`).
+ * For content-heavy static sites add `@plugin "@tailwindcss/typography";` after the `@import`s.
+ * See docs/06-frontend-nuxt.md and docs/15-design-system.md.
+ */
+@import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme {
+	--font-sans: "Rubik", sans-serif;
+}
+
+:root {
+	color-scheme: dark;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+/* slate-950 — the default app background; per-project, see header comment. */
+.main-bg-color {
+	background-color: rgb(2 6 23);
+}
