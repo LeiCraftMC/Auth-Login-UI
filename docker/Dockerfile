@@ -14,4 +14,7 @@ ENV NITRO_ENV=production
 ENV NITRO_HOST=::
 ENV NITRO_PORT=12192
 
-CMD ["bun", "run", ".output/server/index.mjs"]
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
+	CMD curl -f http://localhost:12192/ui/v2/login/healthy || exit 1
+
+CMD ["bun", "run", "/opt/leicraftmc/auth/login-ui/app/.output/server/index.mjs"]
