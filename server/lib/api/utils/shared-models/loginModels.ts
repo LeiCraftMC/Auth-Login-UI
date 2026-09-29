@@ -19,7 +19,7 @@ import { AuthenticationMethodType } from "../../../zitadel/proto/zitadel/user/v2
 
 /**
  * Colors of Zitadel's default label policy (cmd/defaults.yaml). An instance that still uses them
- * has not customized its branding, so the LeiCraftMC primary color is kept.
+ * has not customized its branding, so the LeiCraft_MC primary color is kept.
  */
 const ZITADEL_DEFAULT_PRIMARY_COLORS = new Set(["#5469d4", "#2073c4", "#bbbafa", "#eeeeee"]);
 
@@ -239,7 +239,7 @@ export class LoginDTO {
 	}
 
 	/**
-	 * LeiCraftMC design with the instance's identity: the dark-theme logo/icon and the primary
+	 * LeiCraft_MC design with the instance's identity: the dark-theme logo/icon and the primary
 	 * color, unless it is still Zitadel's default.
 	 */
 	static branding(branding: BrandingSettings | undefined | null): LoginModels.Branding {

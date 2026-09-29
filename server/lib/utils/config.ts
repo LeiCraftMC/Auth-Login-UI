@@ -146,7 +146,7 @@ export class ConfigHandler {
 		// (Zitadel login: ZITADEL_UI_LOCALES_OVERRIDE_COOKIE).
 		UI_LOCALES_OVERRIDE_COOKIE: CS.boolean().default(false),
 		// Application name shown in invite emails (NEXT_PUBLIC_APPLICATION_NAME).
-		APPLICATION_NAME: CS.string().default("LeiCraftMC Auth"),
+		APPLICATION_NAME: CS.string().default("LeiCraft_MC Auth"),
 
 		// --- Caching & security --------------------------------------------------
 		// In-memory stale-while-revalidate cache for settings lookups (API_CACHE_ENABLED /

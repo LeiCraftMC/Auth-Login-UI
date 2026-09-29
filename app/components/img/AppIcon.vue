@@ -3,5 +3,5 @@ const { baseURL } = useRuntimeAppConfigs();
 </script>
 
 <template>
-	<img :src="`${baseURL}/static/logo/icon.svg`" alt="LeiCraftMC" />
+	<img :src="`${baseURL}/static/logo/icon.svg`" alt="LeiCraft_MC" />
 </template>

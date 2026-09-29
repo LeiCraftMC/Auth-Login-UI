@@ -3,7 +3,7 @@
  * server/lib/utils/constants.ts). See docs/03-naming-and-typescript.md.
  */
 export namespace AppConstants {
-	export const APP_NAME = "LeiCraftMC Auth Login";
+	export const APP_NAME = "LeiCraft_MC Auth Login";
 
 	/** Environment-variable prefix — `ConfigHandler` reads `<prefix>_<KEY>`. */
 	export const APP_ENV_PREFIX = "LCMC_AUTH_LOGIN";

@@ -571,7 +571,7 @@ export class ZitadelAPI {
 		userId,
 	}: WithServiceConfig<{ urlTemplate: string; userId: string }>) {
 		const medium = create(SendInviteCodeSchema, {
-			applicationName: ConfigHandler.getConfig()?.APPLICATION_NAME ?? "LeiCraftMC Auth",
+			applicationName: ConfigHandler.getConfig()?.APPLICATION_NAME ?? "LeiCraft_MC Auth",
 			urlTemplate,
 		});
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * The login layout: one centered card on the LeiCraftMC background, the language switcher and the
+ * The login layout: one centered card on the LeiCraft_MC background, the language switcher and the
  * legal links below it. Loads the translations (with the custom texts of `?organization=`)
  * before the page renders.
  */

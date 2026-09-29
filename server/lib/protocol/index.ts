@@ -1,6 +1,6 @@
 /**
  * ProtocolRoutes — the endpoints outside `/api` whose shape is dictated by Zitadel, not by the
- * LeiCraftMC `{ success, code, message, data }` envelope:
+ * LeiCraft_MC `{ success, code, message, data }` envelope:
  *
  * - `GET /login`   — flow initiation: Zitadel redirects here with `?authRequest=` / `?samlRequest=`
  * - `GET /healthy` — liveness (`{}`), `GET /ready` — readiness (Zitadel ready, cookie secret set)

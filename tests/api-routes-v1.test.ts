@@ -37,7 +37,7 @@ describe("GET /v1/loginname", () => {
 		expect(data.loginSettings.allowRegister).toBe(true);
 		expect(data.defaultOrganization).toBe("default-org");
 		expect(data.branding.logoUrl).toBe("https://assets.test/logo.png");
-		// Zitadel's default primary color keeps the LeiCraftMC color
+		// Zitadel's default primary color keeps the LeiCraft_MC color
 		expect(data.branding.primaryColor).toBeUndefined();
 
 		// the virtual instance is selected by the request host
@@ -175,6 +175,6 @@ describe("GET /v1/settings/i18n", () => {
 		// not allowed by the instance → default language
 		const fr = await makeAPIRequest("/v1/settings/i18n", { cookie: "NEXT_LOCALE=fr" });
 		expect(fr.locale).toBe("en");
-		expect(fr.messages.common.title).toBe("Login with LeiCraftMC Auth");
+		expect(fr.messages.common.title).toBe("Login with LeiCraft_MC Auth");
 	});
 });

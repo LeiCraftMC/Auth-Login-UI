@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"private": true,
 	"type": "module",
-	"description": "LeiCraftMC Auth Login UI — a Zitadel Login V2 compatible login for virtual instances, built on the LeiCraft_MC fullstack Nuxt style.",
+	"description": "LeiCraft_MC Auth Login UI — a Zitadel Login V2 compatible login for virtual instances, built on the LeiCraft_MC fullstack Nuxt style.",
 	"scripts": {
 		"check": "bunx --bun biome check",
 		"check:ci": "bunx --bun biome ci",

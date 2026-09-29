@@ -1,17 +1,17 @@
 # AGENTS.md — operating manual for AI coding agents
 
-You are working in the LeiCraftMC Auth Login UI: a LeiCraftMC full-stack Nuxt app (Nuxt frontend +
+You are working in the LeiCraft_MC Auth Login UI: a LeiCraft_MC full-stack Nuxt app (Nuxt frontend +
 Hono backend in `server/`) that replaces the Zitadel Login V2 (`zitadel/apps/login`, ported from
-tag v4.19.2). Follow the LeiCraftMC Style Guides: https://github.com/LeiCraftMC/Style-Guides.
+tag v4.19.2). Follow the LeiCraft_MC Style Guides: https://git.leicraftmc.de/LeiCraftMC/Style-Guides.
 
 ## Must read
 
-- [docs/00-overview.md](https://github.com/LeiCraftMC/Style-Guides/blob/main/docs/00-overview.md)
-- [docs/01-project-structure.md](https://github.com/LeiCraftMC/Style-Guides/blob/main/docs/01-project-structure.md) — the full-stack Nuxt shape
-- [docs/04-backend-hono.md](https://github.com/LeiCraftMC/Style-Guides/blob/main/docs/04-backend-hono.md) — Mounting Hono in Nitro
-- [docs/05-api-contract.md](https://github.com/LeiCraftMC/Style-Guides/blob/main/docs/05-api-contract.md)
-- [docs/06-frontend-nuxt.md](https://github.com/LeiCraftMC/Style-Guides/blob/main/docs/06-frontend-nuxt.md)
-- [docs/07-state-and-data.md](https://github.com/LeiCraftMC/Style-Guides/blob/main/docs/07-state-and-data.md)
+- [docs/00-overview.md](https://git.leicraftmc.de/LeiCraftMC/Style-Guides/blob/main/docs/00-overview.md)
+- [docs/01-project-structure.md](https://git.leicraftmc.de/LeiCraftMC/Style-Guides/blob/main/docs/01-project-structure.md) — the full-stack Nuxt shape
+- [docs/04-backend-hono.md](https://git.leicraftmc.de/LeiCraftMC/Style-Guides/blob/main/docs/04-backend-hono.md) — Mounting Hono in Nitro
+- [docs/05-api-contract.md](https://git.leicraftmc.de/LeiCraftMC/Style-Guides/blob/main/docs/05-api-contract.md)
+- [docs/06-frontend-nuxt.md](https://git.leicraftmc.de/LeiCraftMC/Style-Guides/blob/main/docs/06-frontend-nuxt.md)
+- [docs/07-state-and-data.md](https://git.leicraftmc.de/LeiCraftMC/Style-Guides/blob/main/docs/07-state-and-data.md)
 - `README.md` — setup, structure and the differences to the Zitadel login
 
 ## Non-negotiable

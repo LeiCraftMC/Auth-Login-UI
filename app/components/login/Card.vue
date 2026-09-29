@@ -1,7 +1,7 @@
 <script setup lang="ts">
 /**
  * LoginCard — the branded card every login page renders into (Zitadel login: `DynamicTheme`):
- * the instance / organization logo (or the LeiCraftMC logo), a centered title block and the
+ * the instance / organization logo (or the LeiCraft_MC logo), a centered title block and the
  * page content. Applies the branding's primary color (useBrandingTheme).
  */
 import type { LoginBranding } from "~/utils/loginTypes";

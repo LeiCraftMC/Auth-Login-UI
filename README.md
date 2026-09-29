@@ -1,8 +1,8 @@
-# LeiCraftMC Auth Login UI
+# LeiCraft_MC Auth Login UI
 
-The login of LeiCraftMC Auth: a drop-in replacement for the **Zitadel Login V2**
+The login of LeiCraft_MC Auth: a drop-in replacement for the **Zitadel Login V2**
 ([`zitadel/apps/login`](https://github.com/zitadel/zitadel/tree/main/apps/login), ported from tag
-**v4.19.2**) in the LeiCraftMC design. It serves the same pages, query parameters, cookies and flows
+**v4.19.2**) in the LeiCraft_MC design. It serves the same pages, query parameters, cookies and flows
 (OIDC, SAML, device authorization, IdPs incl. LDAP, passkeys, U2F, TOTP/SMS/email OTP, registration,
 invites, logout), so Zitadel can use it as its login without further changes.
 
@@ -12,7 +12,7 @@ its host (`Host`, or `x-zitadel-instance-host` / `x-zitadel-public-host` behind 
 
 ## Stack
 
-- Nuxt 4 (`app/` srcDir) + NuxtUI v4 + Tailwind v4, client-rendered pages, dark-only LeiCraftMC design
+- Nuxt 4 (`app/` srcDir) + NuxtUI v4 + Tailwind v4, client-rendered pages, dark-only LeiCraft_MC design
   with the logo and primary color of the instance / organization branding
 - Hono + Zod + `hono-openapi` (Scalar) in `server/`, mounted at `<base>/api`
 - Connect (`@connectrpc/connect-web`, binary protobuf) with protobuf-es code generated from the
@@ -81,8 +81,8 @@ Behaviour is kept identical; these are deliberate differences:
   client-rendered pages. Mutating API calls require a same-origin `Origin` (the equivalent of Next's
   server-action origin check; extra origins via `ALLOWED_ORIGINS`).
 - **Authentication**: only the system API user (no service-user token / login client key).
-- **Design**: LeiCraftMC dark design; of the branding settings only the dark logo and a customized
-  primary color are applied (Zitadel's default colors keep the LeiCraftMC color). No light theme.
+- **Design**: LeiCraft_MC dark design; of the branding settings only the dark logo and a customized
+  primary color are applied (Zitadel's default colors keep the LeiCraft_MC color). No light theme.
 - **Hardening / fixes** over v4.19.2: the OTP email link template, the session used to continue a
   flow and the default redirect URI are resolved server-side instead of trusting the client;
   `/mfa/skip` checks that the session belongs to the user; a failed TOTP confirmation shows its error;
