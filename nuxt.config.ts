@@ -14,11 +14,16 @@ export default defineNuxtConfig({
 	},
 
 	// Icons ship in the client bundle and render as inline SVG (CSS mode uses data: mask images,
-	// which the Zitadel login CSP `img-src` blocks). The fallback endpoint must not live under
-	// /api (the Hono catch-all owns it).
+	// which the Zitadel login CSP `img-src` blocks). Icons missing from the bundle load from this
+	// app (`<base>/_nuxt_icon`, Lucide bundled into the server build) — never from
+	// api.iconify.design, which the CSP `connect-src` blocks. With `ssr: false` Nuxt Icon would
+	// default to that CDN. The endpoint must not live under /api (the Hono catch-all owns it).
 	icon: {
 		mode: "svg",
+		provider: "server",
 		localApiEndpoint: "/_nuxt_icon",
+		fallbackToApi: false,
+		serverBundle: { collections: ["lucide"] },
 		clientBundle: { scan: true },
 	},
 

@@ -39,7 +39,8 @@ tag v4.19.2). Follow the LeiCraft_MC Style Guides: https://git.leicraftmc.de/Lei
   `useLoginFlow` (never navigate to a step result yourself); texts via `useTranslations(namespace)`;
   global state via `AbstractStore`. Every page renders one `<LoginCard>`.
 - Lucide icons only (`i-lucide-*`); brand marks of IdPs are images in `components/img/`. Icons
-  render as inline SVG (`icon.mode: "svg"`) because the Zitadel login CSP blocks `data:` images.
+  render as inline SVG (`icon.mode: "svg"`) because the Zitadel login CSP blocks `data:` images;
+  icons missing from the client bundle come from this app (`<base>/_nuxt_icon`), never the Iconify CDN.
 - Never hand-edit `app/api-client/*.gen.ts` (`bun run api-client:generate`) or
   `server/lib/zitadel/proto/**` (`bun run proto:generate`).
 - Format with Biome before finishing. Conventional Commits.

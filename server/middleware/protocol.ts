@@ -6,7 +6,7 @@ import { ConfigHandler } from "../lib/utils/config";
 import { HonoBridge } from "../lib/utils/honoBridge";
 
 /** Paths whose responses are never rendered as documents, so they skip the CSP lookup. */
-const NO_CSP_PREFIXES = ["/api/", "/_nuxt/", "/__nuxt"];
+const NO_CSP_PREFIXES = ["/api/", "/_nuxt/", "/_nuxt_icon/", "/__nuxt"];
 
 /**
  * Runs for every request under the base path (Zitadel login: `proxy.ts` + next.config headers):
