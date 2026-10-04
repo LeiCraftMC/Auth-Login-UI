@@ -13,7 +13,7 @@ COPY .output ./app/.output
 
 EXPOSE 12192/tcp
 
-ENV NITRO_ENV=production
+ENV NODE_ENV=production
 ENV NITRO_HOST=::
 ENV NITRO_PORT=12192
 

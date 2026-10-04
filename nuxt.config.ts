@@ -51,6 +51,33 @@ export default defineNuxtConfig({
 				target: "esnext",
 			},
 		},
+
+		// rollupConfig: {
+		// 	external: ["bun:sqlite"],
+
+		// 	output: {
+		// 		banner: (function () {
+					
+		// 			const mappings = {
+		// 				LAVIAC_APP_URL: "APP_URL"
+		// 			};
+
+		// 			const bannerCode = `
+		// 				(function () {
+		// 					const mappings = ${JSON.stringify(mappings)};
+		// 					const env = globalThis.process?.env ?? {};
+		// 					for (const [envName, runtimeName] of Object.entries(mappings)) {
+		// 						if (!env['NUXT_PUBLIC_' + runtimeName] && env[envName]) {
+		// 							env['NUXT_PUBLIC_' + runtimeName] = env[envName];
+		// 						}
+		// 					}
+		// 				})();
+		// 			`;
+
+		// 			return bannerCode.replace(/^\s+|\s+$/g, '').replace(/\n\s*/g, ' ');
+		// 		})()
+		// 	}
+		// },
 	},
 
 	telemetry: false,
